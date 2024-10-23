@@ -16,7 +16,7 @@ export default function Home() {
             <p>En partie rapide ou personnalisée, mettez à l’épreuve vos méninges et battez les scores des génies avant vous!</p>
           </div>
 
-          <button className="font-montserrat font-bold text-white text-[12px] border-[#FF38D3] bg-[#430086] p-11 w-196">Start</button>
+          <button className="font-montserrat font-bold text-white text-[12px] border-[3.2px] border-[#FF38D3] bg-[#430086]  w-[196px] h-[42px] text-center items-center rounded-lg">Start</button>
 
        </div>
       </main>
