@@ -40,6 +40,29 @@ module.exports = {
         '.text-stroke-purple': {
           '-webkit-text-stroke': '2px rgba(67, 0, 134, 1)', 
         },
+        '.font-bled-0': {
+          fontVariationSettings: '"BLED" 0',
+        },
+        '.font-bled-1': {
+          fontVariationSettings: '"BLED" 1',
+        },
+        '.font-bled-2': {
+          fontVariationSettings: '"BLED" 2',
+        },
+        //"SCAN"
+        '.font-scan-0': {
+          fontVariationSettings: '"SCAN" -5',
+        },
+        '.font-scan-1': {
+          fontVariationSettings: '"SCAN" 1',
+        },
+        '.font-scan-2': {
+          fontVariationSettings: '"SCAN" 2',
+        },
+        // "BLED" et "SCAN"
+        '.font-bled-1-scan-1': {
+          fontVariationSettings: '"BLED" 1, "SCAN" 1',
+        },
       });
     },
   ],
