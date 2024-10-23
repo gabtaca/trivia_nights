@@ -1,13 +1,21 @@
 import localFont from "next/font/local";
 import "./globals.css";
 
+// Load fonts from the `public/fonts` directory
+const girlNextDoor = localFont({
+  src: "/fonts/TheGirlNextDoor-Regular.woff", // Corrected path
+  variable: "--font-girl-next-door",
+  weight: "400",
+});
+
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
+  src: "/fonts/GeistVF.woff", 
   variable: "--font-geist-sans",
   weight: "100 900",
 });
+
 const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
+  src: "/fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
 });
@@ -21,7 +29,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${girlNextDoor.variable} antialiased`}
       >
         {children}
       </body>
