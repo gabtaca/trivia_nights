@@ -2,9 +2,11 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
-      <main className="flex flex-col justify-center items-center w-full h-full">
-        <div className="main_modal flex flex-col items-center bg-[#2B0B38] bg-opacity-[79%] w-[90%] h-[80%] rounded-[50px]">
+    <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
+      <div className="bg_gradient-top z-10 absolute top-0 w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
+      <div className="bg_gradient-bot z-10 absolute bottom-0 w-full h-[20%] bg-gradient-to-t from-slate-900 to-transparent"></div>
+      <main className=" flex flex-col justify-center items-center w-full h-full">
+        <div className="main_modal z-40 flex flex-col items-center bg-[#2B0B38] bg-opacity-[79%] w-[90%] h-[80%] rounded-[50px]">
           <div className="logo ">
             <div className="ctrl_logo_h1 flex blur-[1px]">
               <h1 className="font-tiltNeon text-[109px] text-shadow-neon-pink text-stroke-pink text-pink-100">TRIVIA</h1>
