@@ -9,6 +9,7 @@ module.exports = {
     extend: {
       fontFamily: {
         tiltNeon: ['"Tilt Neon"', 'cursive'], 
+        montserrat: ['"Montserrat"', 'sans-serif']
       },
       colors: {
         background: "var(--background)",
@@ -28,7 +29,7 @@ module.exports = {
         '.text-shadow-neon-pink': {
           textShadow: '0 0 30px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 57, 212, 0.9)',
         },
-'.text-stroke-pink': {
+        '.text-stroke-pink': {
           '-webkit-text-stroke': '6px rgba(255, 57, 212, 1)',
         },
       });
