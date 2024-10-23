@@ -17,7 +17,6 @@ export default function Home() {
               <h2 className="font-girlNextDoor font-thin text-[67px] absolute text-pink-100">NIGHTS</h2>
             </div>
           </div>
-          <h2 className="">NIGHT</h2>
         
           <div className="welcome_text flex flex-col font-montserrat font-bold text-white text-[12px] gap-6 p-6 text-center md:w-270 ">
             <p>Trivia nights vous offre un défi contre la montre où vous avez à répondre à des questions rapidement et correctement pour accumuler des points.</p>
@@ -26,6 +25,13 @@ export default function Home() {
 
           <button className="font-montserrat font-bold text-white text-[12px] border-[#FF38D3] bg-[#430086] p-11 w-196">Start</button>
 
+        </div>
+        <div className="main_modal-gameMenu flex flex-col">
+          <button id="btn_qickMatch">QUICK MATCH</button>
+          <button id="btn_cstmMatch">CUSTOM MATCH</button>
+          <button className="btn_scores bg-black font-sixtyFour font-bold text-[#FEFFB2] px-[75px] py-[12px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_rgba(254,255,178)]" id="btn_scores">SCORES
+            <span>&gt</span>
+          </button>
         </div>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">

@@ -11,6 +11,7 @@ module.exports = {
         tiltNeon: ['"Tilt Neon"', 'cursive'], 
         montserrat: ['"Montserrat"', 'sans-serif'],
         girlNextDoor: ['var(--font-girl-next-door)', 'cursive'],
+        sixtyFour: ['"Sixtyfour"','sans-serif'],
       },
       colors: {
         background: "var(--background)",
