@@ -1,14 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
-export default function StartScreen() {
-  const router = useRouter();
-
-  const startGame = () => {
-    router.push("/gameMenu");
-  };
-
+export default function quickmatch() {
   return (
     <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
       <div className="bg_gradient-top z-0 absolute top-0 w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
