@@ -1,14 +1,4 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-
-export default function StartScreen() {
-  const router = useRouter();
-
-  const startGame = () => {
-    router.push("/gameMenu");
-  };
-
+export default function quickmatch() {
   return (
     <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
       <div className="bg_gradient-top z-0 absolute top-0 w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
@@ -33,9 +23,9 @@ export default function StartScreen() {
               </h2>
             </div>
           </div>
-
+ 
           <button className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center ">START</button>
-
+ 
         </div>
         <div className="main_modal-gameMenu hidden z-10 flex flex-col gap-10 justify-center items-center w-[90%] h-[90%]">
           <div className="logo ">
@@ -70,10 +60,10 @@ export default function StartScreen() {
             <h2>Score:</h2>
           </div>
           <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] w-full h-[100px]">
-
+ 
           </div>
-          
-          
+         
+         
           <nav className="flex flex-col items-center gap-10">
             <button id="btn_reponse1" className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center" >RÉPONSE 1</button>
             <button id="btn_reponse2" className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center" >RÉPONSE 2</button>
