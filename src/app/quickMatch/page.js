@@ -34,26 +34,6 @@ export default function StartScreen() {
             </div>
           </div>
 
-<<<<<<< HEAD:src/app/page.js
-          <div className="welcome_text flex flex-col font-montserrat font-bold text-white text-[12px] gap-6 p-6 text-center w-[300px] sm:w-270px">
-            <p>
-              Trivia nights vous offre un défi contre la montre où vous avez à
-              répondre à des questions rapidement et correctement pour accumuler
-              des points.
-            </p>
-            <p>
-              En partie rapide ou personnalisée, mettez à l’épreuve vos méninges
-              et battez les scores des génies avant vous!
-            </p>
-          </div>
-
-          <button
-            onClick={startGame}
-            className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center"
-          >
-            START
-          </button>
-=======
           <button className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center ">START</button>
 
         </div>
@@ -76,7 +56,6 @@ export default function StartScreen() {
               <span className="text-3xl text-[#FEFFB2]">˄</span>
             </button>
           </nav>
->>>>>>> f8e6ffe7d21a22610898e66a7901cc9d92ca7167:src/app/quickMatch/page.js
         </div>
         <div className="main_modal-quickmatch z-10 flex flex-col gap-10 justify-center items-center w-[90%] h-[90%]">
           <div className="main_modal-quickmatch-banner bg-black flex-row h-[100px] w-full">
