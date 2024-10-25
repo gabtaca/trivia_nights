@@ -18,7 +18,7 @@ export default function quickmatch() {
           <div className="myscore_container text-[#61FF64] font-sixtyFour text-[16px]">
             <h2>Score:</h2>
           </div>
-          <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] w-full h-[100px]">
+          <div className="question_container bg-[#2B0C39] bg-opacity-60 rounded-3xl shadow-[3px_4px_0px_0px_rgba(255,57,212)] w-full h-[100px]">
  
           </div>
          
@@ -26,18 +26,26 @@ export default function quickmatch() {
             <button id="btn_reponse1" className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center" >RÉPONSE 1</button>
             <button id="btn_reponse2" className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center" >RÉPONSE 2</button>
             <button id="btn_reponse3" className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center" >RÉPONSE 3</button>
-            <button id="btn_reponse4" className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center" >RÉPONSE 4</button>
+            <button id="btn_reponse4" className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center" >RÉPONSE 4</button>
           </nav>
-          <div className="logo ">
-            <div className="ctrl_logo_h1 flex blur-[1px]">
-              <h1 className="font-tiltNeon text-[80px] text-shadow-neon-pink text-stroke-pink text-pink-100">TRIVIA</h1>
-              <h1 className="font-tiltNeon text-[80px] absolute text-pink-100">TRIVIA</h1>
+
+          <div className="logo_quickmatch flex flex-row justify-between  w-full">
+            <div className="logo w-[50%] flex flex-col">
+              <div className="ctrl_logo_h1 flex blur-[1px]">
+                <h1 className="font-tiltNeon text-[40px] text-shadow-neon-pink text-stroke-pink text-pink-100">TRIVIA</h1>
+                <h1 className="font-tiltNeon text-[40px] absolute text-pink-100">TRIVIA</h1>
+              </div>
+              <div className="ctrl_logo_h2 flex blur-[1px] m-[-35px] pr-2 justify-end">
+                <h2 className="font-girlNextDoor font-thin text-[25px] text-shadow-neon-purple text-stroke-purple text-pink-100">NIGHTS</h2>
+                <h2 className="font-girlNextDoor font-thin text-[25px] absolute text-pink-100">NIGHTS</h2>
+              </div>
             </div>
-            <div className="ctrl_logo_h2 flex blur-[1px] m-[-35px] pr-2 justify-end">
-              <h2 className="font-girlNextDoor font-thin text-[50px] text-shadow-neon-purple text-stroke-purple text-pink-100">NIGHTS</h2>
-              <h2 className="font-girlNextDoor font-thin text-[50px] absolute text-pink-100">NIGHTS</h2>
+            <div className="font-tiltNeon text-[#FF38D] text-[25px] flex flex-row">
+            <h2>Quick match</h2>
             </div>
           </div>
+          
+
         </div>
       </main>
     </div>
