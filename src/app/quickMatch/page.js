@@ -59,7 +59,7 @@ export default function quickmatch() {
           <div className="myscore_container text-[#61FF64] font-sixtyFour text-[16px]">
             <h2>Score:</h2>
           </div>
-          <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] w-full h-[100px]">
+          <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] drop-shadow-md w-full h-[100px]">
  
           </div>
          
