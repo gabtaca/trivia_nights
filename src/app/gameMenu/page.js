@@ -1,3 +1,4 @@
+/*gameMenue.js*/
 "use client";
 
 import { useRouter } from 'next/navigation'; // Import useRouter
@@ -6,7 +7,11 @@ export default function GameMenu() {
   const router = useRouter(); // Define router within GameMenu
 
   const quickMatch = () => {
-    router.push("/quickMatch"); // Redirects to /quickMatch
+    router.push("/quickMatch"); 
+  };
+
+  const customMatch = () => {
+    router.push("/customMatch"); 
   };
 
   return (
@@ -43,6 +48,7 @@ export default function GameMenu() {
               QUICK MATCH
             </button>
             <button
+            onClick={customMatch}
               id="btn_cstmMatch"
               className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center"
             >

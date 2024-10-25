@@ -1,9 +1,8 @@
 import localFont from "next/font/local";
 import './globals.css';
 
-// Load fonts from the `public/fonts` directory
 const girlNextDoor = localFont({
-  src: "/fonts/TheGirlNextDoor-Regular.woff", // Corrected path
+  src: "/fonts/TheGirlNextDoor-Regular.woff", 
   variable: "--font-girl-next-door",
   weight: "400",
 });
