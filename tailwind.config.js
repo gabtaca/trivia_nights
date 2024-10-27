@@ -16,6 +16,7 @@ module.exports = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        neonPink: "#FF38D",
       },
       backgroundImage: {
         'brick-background': "url('/brick_wall.png')",

@@ -40,8 +40,8 @@ export default function quickmatch() {
                 <h2 className="font-girlNextDoor font-thin text-[25px] absolute text-pink-100">NIGHTS</h2>
               </div>
             </div>
-            <div className="font-tiltNeon text-[#FF38D] text-[25px] flex flex-row">
-            <h2>Quick match</h2>
+            <div className="font-tiltNeon text-neonPink text-[25px] flex flex-row">
+            <h2 className="text-neonPink">Quick match</h2>
             </div>
           </div>
           
