@@ -1,15 +1,14 @@
 // QuickMatch.js
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchQuestions, getSessionToken } from "../utilities/fetch";
 import { saveScore, getScores } from "../utilities/scores";
 import RotatingScores from "../utilities/RotatingScores";
 import ScoreModal from "../utilities/ScoreModal";
-import { testHighScore, clearScores } from "../utilities/testHighscore";
-import PieTimer from "../utilities/pieTimer"; // Importez PieTimer
-import Timer from "../utilities/timer"; // Importez Timer
+import PieTimer from "../utilities/pieTimer";
+import { clearScores } from "../utilities/testHighscore";
+
 
 export default function QuickMatch() {
   const router = useRouter();
@@ -37,7 +36,6 @@ export default function QuickMatch() {
 
   useEffect(() => {
     loadQuestions();
-
     const scores = getScores("quickMatch")
       .sort((a, b) => b.score - a.score)
       .slice(0, 5);
@@ -45,7 +43,6 @@ export default function QuickMatch() {
   }, [sessionToken]);
 
   const currentQuestion = questions[currentQuestionIndex];
-
   const answers = currentQuestion
     ? [...currentQuestion.incorrect_answers, currentQuestion.correct_answer].sort(() => Math.random() - 0.5)
     : [];
@@ -56,14 +53,12 @@ export default function QuickMatch() {
       updatedScore = score + 1;
       setScore(updatedScore);
     }
-
     const allScores = getScores("quickMatch");
     const highestScore = allScores.length > 0 ? Math.max(...allScores.map(s => s.score)) : 0;
     const currentScoreValue = updatedScore * 10000;
     if (currentScoreValue > highestScore && !hasBeatenHighScore) {
       setHasBeatenHighScore(true);
     }
-
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
@@ -101,7 +96,6 @@ export default function QuickMatch() {
         </button>
         <RotatingScores topScores={topScores} />
       </div>
-
       <main className={`flex flex-col justify-center items-center w-full h-full ${isScoreModalOpen ? "hidden" : ""}`}>
         <div className="main_modal-quickmatch top-0 z-10 flex flex-col gap-10 justify-center items-center w-[90%] h-[90%]">
           {hasBeatenHighScore && (
@@ -112,20 +106,16 @@ export default function QuickMatch() {
           <div className="myscore_container text-[#61FF64] font-sixtyFour text-[16px]">
             <h2>Score: {score * 10000}</h2>
           </div>
-
           <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] shadow-[3px_4px_0px_0px_rgba(255,57,212)] w-full h-full flex flex-col  gap-5  items-center text-center p-14 justify-between rounded-xl">
             <div className="question_header flex flex-row font-tiltNeon text-[35px] w-full justify-between m-0">
               <h2 className="font-bold text-shadow-neon-pink text-stroke-pink absolute">{currentQuestion?.type}</h2>
               <h2 className="text-white font-bold relative">{currentQuestion?.type}</h2>
               <div className="timer_container">
-                <Timer /> {/* Affiche le timer ici */}
-                <PieTimer duration={10} /> {/* Exemple : 10 secondes */}
+                <PieTimer duration={20} /> {/* Timer de 20 secondes */}
               </div>
             </div>
-
             <h3 className="text-white font-montserrat font-bold text-[24px]">{currentQuestion?.question}</h3>
           </div>
-
           <nav className="answer_container flex flex-col items-center gap-5">
             {answers.map((answer, index) => (
               <button
@@ -140,7 +130,6 @@ export default function QuickMatch() {
           </nav>
         </div>
       </main>
-
       <footer className="footer flex justify-center items-center p-4 space-x-4">
         <button
           onClick={() => testHighScore(handleGameOver)}
@@ -155,7 +144,6 @@ export default function QuickMatch() {
           Effacer les Scores
         </button>
       </footer>
-
       <ScoreModal
         isOpen={isScoreModalOpen}
         onClose={handleReturnToMenu}
