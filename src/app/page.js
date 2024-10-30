@@ -3,9 +3,24 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function StartScreen() {
   const router = useRouter();
+
+  useEffect(() => {
+    // Initialize base score for quickMatch if it doesn't exist
+    const quickMatchScores = JSON.parse(localStorage.getItem("quickMatch"));
+    if (!quickMatchScores) {
+      localStorage.setItem("quickMatch", JSON.stringify([{ name: "", score: '0000000', date: new Date().toLocaleDateString() }]));
+    }
+
+    // Initialize base score for customMatch if it doesn't exist
+    const customMatchScores = JSON.parse(localStorage.getItem("customMatch"));
+    if (!customMatchScores) {
+      localStorage.setItem("customMatch", JSON.stringify([{ name: "", score: '0000000', date: new Date().toLocaleDateString() }]));
+    }
+  }, []);
 
   const startGame = () => {
     router.push("/gameMenu");
@@ -15,7 +30,7 @@ export default function StartScreen() {
     <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
       <div className="bg_gradient-top z-0 absolute top-0 w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
       <div className="bg_gradient-bot z-0 absolute bottom-0 w-full h-[20%] bg-gradient-to-t from-slate-900 to-transparent"></div>
-      <main className=" flex flex-col justify-center items-center w-full h-full">
+      <main className="flex flex-col justify-center items-center w-full h-full">
         <div className="main_modal-homeMenu z-40 flex flex-col items-center bg-[#2B0B38] bg-opacity-[79%] w-[90%] h-[80%] rounded-[50px] justify-evenly">
           <div className="logo">
             <div className="ctrl_logo_h1 flex blur-[1px]">

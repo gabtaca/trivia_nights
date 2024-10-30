@@ -1,0 +1,6 @@
+[
+  { "value": "null", "label": "TYPE DE QUESTIONS" },
+  { "value": "any", "label": "Any Type" },
+  { "value": "multiple", "label": "Multiple Choice" },
+  { "value": "boolean", "label": "True / False" }
+]

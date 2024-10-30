@@ -45,14 +45,14 @@ export default function GameMenu() {
               id="btn_quickMatch"
               className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center"
             >
-              QUICK MATCH
+                PARTIE RAPIDE
             </button>
             <button
             onClick={customMatch}
               id="btn_cstmMatch"
               className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center"
             >
-              CUSTOM MATCH
+              PARTIE PERSONALISÉE
             </button>
           </nav>
 
