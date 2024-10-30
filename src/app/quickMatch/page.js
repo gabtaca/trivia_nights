@@ -1,33 +1,35 @@
+// QuickMatch.js
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Redirection
-import { fetchQuestions, getSessionToken } from "../utilities/fetch"; // Page fetch
-import { saveScore, getScores } from "../utilities/scores"; // Page scores
-import RotatingScores from "../utilities/RotatingScores"; // Page pour scores rotatifs
-import ScoreModal from "../utilities/ScoreModal"; // Modal du score final
-import { testHighScore, clearScores } from "../utilities/testHighscore"; // Import testHighScore et clearScores
+import { useRouter } from "next/navigation";
+import { fetchQuestions, getSessionToken } from "../utilities/fetch";
+import { saveScore, getScores } from "../utilities/scores";
+import RotatingScores from "../utilities/RotatingScores";
+import ScoreModal from "../utilities/ScoreModal";
+import { testHighScore, clearScores } from "../utilities/testHighscore";
+import PieTimer from "../utilities/pieTimer"; // Importez PieTimer
+import Timer from "../utilities/timer"; // Importez Timer
 
 export default function QuickMatch() {
-  const router = useRouter(); // Hook de Next.js pour la redirection
-  const [questions, setQuestions] = useState([]); // Stock les questions récupérées
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Index de la question en cours
-  const [sessionToken, setSessionToken] = useState(null); // Token de session
-  const [score, setScore] = useState(0); // Score actuel
-  const [topScores, setTopScores] = useState([]); // Liste des meilleurs scores
-  const [isScoreModalOpen, setIsScoreModalOpen] = useState(false); // Visibilité de la modal du score
-  const [hasBeatenHighScore, setHasBeatenHighScore] = useState(false); // Indique si le meilleur score a été battu
-  const [matchType] = useState("quickMatch"); // Identifie le mode de jeu actuel
+  const router = useRouter();
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [sessionToken, setSessionToken] = useState(null);
+  const [score, setScore] = useState(0);
+  const [topScores, setTopScores] = useState([]);
+  const [isScoreModalOpen, setIsScoreModalOpen] = useState(false);
+  const [hasBeatenHighScore, setHasBeatenHighScore] = useState(false);
+  const [matchType] = useState("quickMatch");
 
-  // Fonction pour charger les questions
   async function loadQuestions() {
     if (!sessionToken) {
-      const token = await getSessionToken(); // Récupère un token de session
+      const token = await getSessionToken();
       setSessionToken(token);
     }
     try {
       const questionData = await fetchQuestions(15, "any", "medium", "any", "default", sessionToken);
-      setQuestions(questionData); // Charge les questions dans l'état
+      setQuestions(questionData);
     } catch (error) {
       console.error("Error loading questions:", error);
     }
@@ -36,10 +38,9 @@ export default function QuickMatch() {
   useEffect(() => {
     loadQuestions();
 
-    // Récupération et tri des meilleurs scores pour l'affichage rotatif
     const scores = getScores("quickMatch")
-      .sort((a, b) => b.score - a.score) // Trie les scores du plus grand au plus petit
-      .slice(0, 5); // Prend les 5 meilleurs scores
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
     setTopScores(scores);
   }, [sessionToken]);
 
@@ -47,16 +48,15 @@ export default function QuickMatch() {
 
   const answers = currentQuestion
     ? [...currentQuestion.incorrect_answers, currentQuestion.correct_answer].sort(() => Math.random() - 0.5)
-    : []; // Mélange les réponses si currentQuestion est défini
+    : [];
 
   const handleAnswer = (isCorrect) => {
     let updatedScore = score;
     if (isCorrect) {
       updatedScore = score + 1;
-      setScore(updatedScore); // Incrémente le score si la réponse est correcte
+      setScore(updatedScore);
     }
 
-    // Vérifie si le score actuel dépasse le meilleur score
     const allScores = getScores("quickMatch");
     const highestScore = allScores.length > 0 ? Math.max(...allScores.map(s => s.score)) : 0;
     const currentScoreValue = updatedScore * 10000;
@@ -65,34 +65,33 @@ export default function QuickMatch() {
     }
 
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1); // Passe à la question suivante
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      setIsScoreModalOpen(true); // Ouvre la modal de fin de partie
+      setIsScoreModalOpen(true);
     }
   };
 
   const handleReplay = (name) => {
-    saveScore(name, score * 10000, "quickMatch"); // Enregistre le score
+    saveScore(name, score * 10000, "quickMatch");
     setScore(0);
     setCurrentQuestionIndex(0);
-    setHasBeatenHighScore(false); // Réinitialise le flag
+    setHasBeatenHighScore(false);
     loadQuestions();
-    setIsScoreModalOpen(false); // Ferme la modal
+    setIsScoreModalOpen(false);
   };
 
   const handleReturnToMenu = (name) => {
-    saveScore(name, score * 10000, "quickMatch"); // Enregistre le score
+    saveScore(name, score * 10000, "quickMatch");
     setScore(0);
     setCurrentQuestionIndex(0);
-    setHasBeatenHighScore(false); // Réinitialise le flag
+    setHasBeatenHighScore(false);
     setIsScoreModalOpen(false);
-    router.push("/gameMenu"); // Redirige vers le menu principal
+    router.push("/gameMenu");
   };
 
   return (
     <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
       <div className="main_modal-quickmatch-banner absolute z-50 top-0 p-4 bg-black flex items-center space-x-5 w-full">
-        {/* Bouton pour afficher les meilleurs scores */}
         <button
           id="btn_scores"
           className="flex flex-row justify-center items-center bg-black font-sixtyFour text-[#FEFFB2] w-[150px] px-[10px] py-[6px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[2px_2px_0px_0px_#FEFFB2]"
@@ -103,26 +102,30 @@ export default function QuickMatch() {
         <RotatingScores topScores={topScores} />
       </div>
 
-      {/* Affichage principal de la partie, caché lorsque la modal est ouverte */}
       <main className={`flex flex-col justify-center items-center w-full h-full ${isScoreModalOpen ? "hidden" : ""}`}>
         <div className="main_modal-quickmatch top-0 z-10 flex flex-col gap-10 justify-center items-center w-[90%] h-[90%]">
-          {/* Affiche le score actuel */}
           {hasBeatenHighScore && (
-              <div className="text-yellow-400 font-bold text-lg animate-bounce">
-                Nouveau Meilleur Score!
-              </div>
-            )}
+            <div className="text-yellow-400 font-bold text-lg animate-bounce">
+              Nouveau Meilleur Score!
+            </div>
+          )}
           <div className="myscore_container text-[#61FF64] font-sixtyFour text-[16px]">
             <h2>Score: {score * 10000}</h2>
-
           </div>
 
-          {/* Affiche la question en cours */}
-          <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] w-full h-[100px] flex items-center justify-center px-5 text-center">
-            <h3 className="text-white font-bold">{currentQuestion?.question}</h3>
+          <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] shadow-[3px_4px_0px_0px_rgba(255,57,212)] w-full h-full flex flex-col  gap-5  items-center text-center p-14 justify-between rounded-xl">
+            <div className="question_header flex flex-row font-tiltNeon text-[35px] w-full justify-between m-0">
+              <h2 className="font-bold text-shadow-neon-pink text-stroke-pink absolute">{currentQuestion?.type}</h2>
+              <h2 className="text-white font-bold relative">{currentQuestion?.type}</h2>
+              <div className="timer_container">
+                <Timer /> {/* Affiche le timer ici */}
+                <PieTimer duration={10} /> {/* Exemple : 10 secondes */}
+              </div>
+            </div>
+
+            <h3 className="text-white font-montserrat font-bold text-[24px]">{currentQuestion?.question}</h3>
           </div>
 
-          {/* Affiche les réponses aléatoirement */}
           <nav className="answer_container flex flex-col items-center gap-5">
             {answers.map((answer, index) => (
               <button
@@ -135,16 +138,6 @@ export default function QuickMatch() {
               </button>
             ))}
           </nav>
-          <div className="logo ">
-            <div className="ctrl_logo_h1 flex blur-[1px]">
-              <h1 className="font-tiltNeon text-[80px] text-shadow-neon-pink text-stroke-pink text-pink-100">TRIVIA</h1>
-              <h1 className="font-tiltNeon text-[80px] absolute text-pink-100">TRIVIA</h1>
-            </div>
-            <div className="ctrl_logo_h2 flex blur-[1px] m-[-35px] pr-2 justify-end">
-              <h2 className="font-girlNextDoor font-thin text-[50px] text-shadow-neon-purple text-stroke-purple text-pink-100">NIGHTS</h2>
-              <h2 className="font-girlNextDoor font-thin text-[50px] absolute text-pink-100">NIGHTS</h2>
-            </div>
-          </div>
         </div>
       </main>
 
@@ -163,13 +156,12 @@ export default function QuickMatch() {
         </button>
       </footer>
 
-      {/* Modal de score avec options pour rejouer ou retourner au menu */}
       <ScoreModal
         isOpen={isScoreModalOpen}
         onClose={handleReturnToMenu}
         onSave={handleReplay}
         score={score * 10000}
-        isBestScore={hasBeatenHighScore} // Utilise le flag
+        isBestScore={hasBeatenHighScore}
         matchType={matchType}
       />
     </div>
