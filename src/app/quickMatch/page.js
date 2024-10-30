@@ -4,15 +4,15 @@
  
 export default function quickmatch() {
   return (
-    <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
-      <div className="bg_gradient-top z-0 absolute top-0 w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
+    <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh] m-0">
+      <div className="bg_gradient-top hidden z-0 absolute top-0 w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
       <div className="bg_gradient-bot z-0 absolute bottom-0 w-full h-[20%] bg-gradient-to-t from-slate-900 to-transparent"></div>
       <main className=" flex flex-col justify-center items-center w-full h-full">
         <div className="main_modal-quickmatch z-10 flex flex-col gap-10 justify-center items-center w-[90%] h-[90%]">
-          <div className="main_modal-quickmatch-banner bg-black flex-row h-[100px] w-full">
-            <button id="btn_scores" className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0  text-[#FEFFB2] w-[215px] px-[20px] py-[12px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]">
-                <span className="text-[#FEFFB2] pl-5 text-[16px] tracking-wider">SCORES</span>
-                <span className="text-lg text-[#FEFFB2] items-baseline rotate-90">
+          <div className="main_modal-quickmatch-banner z-0 absolute top-0 bg-black flex-row h-[100px] w-full">
+            <button id="btn_scores" className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0  text-[#FEFFB2] w-[215px] px-[20px] py-[12px] sm:text-[12px] sm:w-[115px] sm:px-[10px] sm:py-[6px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]">
+                <span className="text-[#FEFFB2] pl-5 md:text-[16px] text-[12px] tracking-wider">SCORES</span>
+                <span className=" sm:text-md  md:text-lg text-[#FEFFB2] items-baseline rotate-90">
                   &gt;
                 </span>
             </button>
@@ -32,8 +32,8 @@ export default function quickmatch() {
           </nav>
 
           <div className="logo_quickmatch flex flex-row justify-between  w-full">
-            <div className="logo w-[50%] flex flex-col">
-              <div className="ctrl_logo_h1 flex blur-[1px]">
+            <div className="logo  flex flex-col">
+              <div className="ctrl_logo_h1 flex blur-[1px] w-[60%]">
                 <h1 className="font-tiltNeon text-[40px] text-shadow-neon-pink text-stroke-pink text-pink-100">TRIVIA</h1>
                 <h1 className="font-tiltNeon text-[40px] absolute text-pink-100">TRIVIA</h1>
               </div>
