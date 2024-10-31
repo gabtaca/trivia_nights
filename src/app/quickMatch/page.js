@@ -6,7 +6,7 @@ import { getScores } from "../utilities/scores";
 import RotatingScores from "../utilities/RotatingScores";
 import ScoreModal from "../utilities/ScoreModal";
 import { testHighScore, clearScores } from "../utilities/testHighscore";
-import PieTimer from "../utilities/pieTimer";
+
 
 export default function QuickMatch() {
   const router = useRouter();
@@ -85,6 +85,10 @@ export default function QuickMatch() {
     router.push("/gameMenu");
   };
 
+  const goToMenu = () => {
+    router.push("/gameMenu");
+  };
+
   return (
     <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
       <div className="main_modal-quickmatch-banner absolute z-50 top-0 p-4 bg-black flex items-center space-x-5 w-full">
@@ -115,14 +119,15 @@ export default function QuickMatch() {
             <h2>Score: {score * 10000}</h2>
           </div>
           <div className="question_container bg-[#2B0C39] bg-opacity-65 border-r-[#FF38D4] shadow-[3px_4px_0px_0px_rgba(255,57,212)] w-full h-full flex flex-col  gap-5  items-center text-center p-14 justify-between rounded-xl">
-            <div className="question_header opacity-100 flex flex-row font-tiltNeon text-[30px] w-full justify-between m-0">
+            <div className="question_header opacity-100 flex flex-row font-tiltNeon text-[30px] w-full justify-center m-0 ">
               <h2 className="font-bold text-shadow-neon-pink text-stroke-pink absolute">{currentQuestion?.type === 'multiple' ? 'Choix Multiple' : currentQuestion?.type === 'boolean' ? 'Vrai ou Faux' : currentQuestion?.type === 'multiple' ? 'Choix Multiple' : currentQuestion?.type === 'boolean' ? 'Vrai ou Faux' : currentQuestion?.type}</h2>
               <h2 className="text-white font-bold relative questionType_title">{currentQuestion?.type === 'multiple' ? 'Choix Multiple' : currentQuestion?.type === 'boolean' ? 'Vrai ou Faux' : currentQuestion?.type === 'multiple' ? 'Choix Multiple' : currentQuestion?.type === 'boolean' ? 'Vrai ou Faux' : currentQuestion?.type}</h2>
               <div className="timer_container">
-                <PieTimer duration={20} /> {/* Timer de 20 secondes */}
+                
               </div>
             </div>
             <h3 className="text-white font-montserrat font-semibold text-[16px]">{currentQuestion?.question}</h3>
+            <span className="text-white text-right w-full">{currentQuestionIndex + ' / ' + questions.length}</span>
           </div>
           
           <nav className="answer_container flex flex-col items-center gap-5">
@@ -140,6 +145,35 @@ export default function QuickMatch() {
             ))}
           </nav>
         </div>
+        <div className="flex flex-row w-full justify-between items-center">
+                {/* Updated button to use goToMenu function */}
+        <button
+          onClick={goToMenu}
+          className="btn_homeLogo-customMatch flex flex-col cursor-pointer w-full"
+        >
+          <div className="flex flex-col cursor-pointer pl-10">
+            <div className="ctrl_logo_h1 flex blur-[0.5px]">
+              <h1 className="font-tiltNeon text-[40px] text-shadow-neon-pink text-stroke-pink text-pink-100">
+                TRIVIA
+              </h1>
+              <h1 className="font-tiltNeon text-[40px] absolute text-pink-100">
+                TRIVIA
+              </h1>
+            </div>
+            <div className="ctrl_logo_h2 flex w-full justify-end mt-[-10px] ml-[20px] blur-[0.5px]">
+              <h2 className="font-girlNextDoor font-thin text-[25px] text-shadow-neon-purple text-stroke-purple text-pink-100">
+                NIGHTS
+              </h2>
+              <h2 className="font-girlNextDoor font-thin text-[25px] absolute text-pink-100">
+                NIGHTS
+              </h2>
+            </div>
+          </div>
+        </button>
+        <div className="flex w-full text-center font-tiltNeon justify-end">
+          <h2 className="font-tiltNeon text-stroke-pink2  text-[25px] w-full">PARTIE RAPIDE</h2>
+        </div>
+      </div>
       </main>
       <footer className="footer flex justify-center items-center p-4 space-x-4">
         <button

@@ -38,6 +38,9 @@ module.exports = {
         '.text-stroke-pink': {
           '-webkit-text-stroke': '6px rgba(255, 57, 212, 1)',
         },
+        '.text-stroke-pink2': {
+          '-webkit-text-stroke': '1px rgba(255, 57, 212, 0.5)',
+        },
         '.text-shadow-neon-purple': {
           textShadow: '0 0 10px rgba(67, 0, 134, 0.8), 0 0 20px rgba(67, 0, 134, 0.6), 0 0 30px rgba(67, 0, 134, 0.5)',
         },
