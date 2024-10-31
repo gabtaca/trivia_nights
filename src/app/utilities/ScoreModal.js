@@ -1,10 +1,19 @@
 /* ScoreModal.js */
 
 import React, { useState, useEffect } from "react";
-import { launchFireworks } from "../utilities/fireworks"; 
+import { launchFireworks } from "../utilities/fireworks";
 
-export default function ScoreModal({ isOpen, onClose, onSave, score, isBestScore, matchType }) {
+export default function ScoreModal({
+  isOpen,
+  onClose,
+  onSave,
+  score,
+  isBestScore,
+  matchType,
+}) {
   const [playerName, setPlayerName] = useState("");
+  const [error, setError] = useState(false); // message d'erreur pour le nom
+  const [disableButtons, setDisableButtons] = useState(false); // controle si les boutons doivent être enlevé
 
   useEffect(() => {
     if (isOpen && isBestScore) {
@@ -15,13 +24,29 @@ export default function ScoreModal({ isOpen, onClose, onSave, score, isBestScore
   if (!isOpen) return null;
 
   const handleReplay = () => {
-    onSave(playerName, score); // Save the score first
-    onSave(playerName); // Starts a new QuickMatch game if in quickMatch mode
+    if (!playerName) {
+      setError(true); // Trigger error if no name is provided
+      setDisableButtons(true); // Disable buttons if no input
+      return;
+    }
+    onSave(playerName, score); // Save score first
+    onSave(playerName); // Replay game if in quickmatch
   };
 
   const handleReturnToMenu = () => {
-    onSave(playerName, score); // Save the score first
-    onClose(); // Return to game settings menu in customMatch mode
+    if (!playerName) {
+      setError(true); // Trigger error if no name is provided
+      setDisableButtons(true); // Disable buttons if no input
+      return;
+    }
+    onSave(playerName, score); // Save score
+    onClose(); // Return to customMatch settings
+  };
+
+  const handleInputChange = (e) => {
+    setPlayerName(e.target.value);
+    setError(false); // Clear error when user starts typing
+    setDisableButtons(false); // Re-enable buttons when input is given
   };
 
   return (
@@ -35,26 +60,50 @@ export default function ScoreModal({ isOpen, onClose, onSave, score, isBestScore
         ></canvas>
       )}
 
-      <div className="bg-[#2B0C39] bg-opacity-55 flex-col gap-5 flex items-center justify-center px-5 z-30 p-5 rounded-lg w-[300px] text-center relative">
+      <div
+        className={`bg-[#2B0C39] bg-opacity-55 flex-col gap-5 flex items-center justify-center px-5 z-30 p-5 rounded-lg w-[300px] text-center relative ${
+          error ? "animate-shake" : ""
+        }`}
+        style={{ animation: error ? "shake 0.3s ease" : "" }}
+      >
         {isBestScore && (
           <div className="top-[-150px] bg-transparent font-tiltNeon text-yellow-300 p-3 rounded-lg font-bold animate-bounce">
-            <p className="text-3xl">FÉLICITATION!</p> 
+            <p className="text-3xl">FÉLICITATION!</p>
             <p className="text-xl">VOUS AVEZ LE MEILLEUR SCORE!!</p>
           </div>
         )}
-        <h2 className="text-xl text-[#FF38D4] font-semibold mb-4">Partie terminée! Votre score: {score}</h2>
+        <h2 className="text-xl text-[#FF38D4] font-semibold mb-4">
+          Partie terminée! Votre score: {score}
+        </h2>
+
         <input
           type="text"
           placeholder="Entrez votre nom"
           value={playerName}
-          onChange={(e) => setPlayerName(e.target.value)}
-          className="border rounded p-2 w-full mb-4"
+          onChange={handleInputChange}
+          className="border rounded p-2 w-full mb-2"
         />
+        {error && (
+          <p className="text-red-500 text-sm mb-2">Veuillez entrer votre nom</p>
+        )}
+
         <div className="flex space-x-4">
-          <button onClick={handleReplay} className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[100px] px-[20px] py-[12px] items-center">
+          <button
+            onClick={handleReplay}
+            disabled={disableButtons}
+            className={`font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[100px] px-[20px] py-[12px] items-center ${
+              disableButtons ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
             REJOUER
           </button>
-          <button onClick={handleReturnToMenu} className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[100px] px-[20px] py-[12px] items-center">
+          <button
+            onClick={handleReturnToMenu}
+            disabled={disableButtons}
+            className={`font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[100px] px-[20px] py-[12px] items-center ${
+              disableButtons ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
             RETOUR AU MENU
           </button>
         </div>
