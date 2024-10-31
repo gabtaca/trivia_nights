@@ -6,6 +6,7 @@ import { saveScore, getScores } from "../utilities/scores";
 import RotatingScores from "../utilities/RotatingScores";
 import ScoreModal from "../utilities/ScoreModal";
 import { testHighScore, clearScores } from "../utilities/testHighscore";
+import PieTimer from "../utilities/pieTimer";
 
 export default function QuickMatch() {
   const router = useRouter();
