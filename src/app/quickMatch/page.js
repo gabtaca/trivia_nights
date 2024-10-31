@@ -111,8 +111,8 @@ export default function QuickMatch() {
           </div>
           <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] shadow-[3px_4px_0px_0px_rgba(255,57,212)] w-full h-full flex flex-col  gap-5  items-center text-center p-14 justify-between rounded-xl">
             <div className="question_header flex flex-row font-tiltNeon text-[35px] w-full justify-between m-0">
-              <h2 className="font-bold text-shadow-neon-pink text-stroke-pink absolute">{currentQuestion?.type}</h2>
-              <h2 className="text-white font-bold relative">{currentQuestion?.type}</h2>
+              <h2 className="font-bold text-shadow-neon-pink text-stroke-pink absolute">{currentQuestion?.type === 'multiple' ? 'Choix Multiple' : currentQuestion?.type === 'boolean' ? 'Vrai ou Faux' : currentQuestion?.type}</h2>
+              <h2 className="text-white font-bold relative questionType_title">{currentQuestion?.type === 'multiple' ? 'Choix Multiple' : currentQuestion?.type === 'boolean' ? 'Vrai ou Faux' : currentQuestion?.type}</h2>
               <div className="timer_container">
                 <PieTimer duration={20} /> {/* Timer de 20 secondes */}
               </div>
