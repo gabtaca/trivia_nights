@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { fetchQuestionsCMatch } from "../../utilities/fetch"; // N'utilisez pas getSessionToken ici
+import { fetchQuestionsCMatch } from "../../utilities/fetch";
 import { saveScore, getScores } from "../../utilities/scores";
 import RotatingScores from "../../utilities/RotatingScores";
 import ScoreModal from "../../utilities/ScoreModal";
@@ -23,17 +23,31 @@ export default function CustomGamePage() {
   const [hasBeatenHighScore, setHasBeatenHighScore] = useState(false);
   const [matchType] = useState("customMatch");
 
+  // Charger les questions depuis le localStorage ou via l'API
   async function loadQuestions() {
-    try {
-      const questionData = await fetchQuestionsCMatch(
-        selectedAmount,
-        selectedCategory,
-        selectedDifficulty,
-        selectedType
-      );
-      setQuestions(questionData);
-    } catch (error) {
-      console.error("Erreur de chargement des questions:", error);
+    const savedQuestions = JSON.parse(localStorage.getItem("savedQuestions"));
+    const savedIndex = parseInt(localStorage.getItem("currentQuestionIndex"), 10) || 0;
+
+    // Si des questions sont trouvées dans le localStorage, les utiliser
+    if (savedQuestions && savedQuestions.length > 0) {
+      setQuestions(savedQuestions);
+      setCurrentQuestionIndex(savedIndex);
+    } else {
+      // Sinon, faire appel à l'API pour récupérer de nouvelles questions
+      try {
+        const questionData = await fetchQuestionsCMatch(
+          selectedAmount,
+          selectedCategory,
+          selectedDifficulty,
+          selectedType
+        );
+        setQuestions(questionData.questions);
+        setCurrentQuestionIndex(questionData.currentQuestionIndex || 0);
+        localStorage.setItem("savedQuestions", JSON.stringify(questionData.questions));
+        localStorage.setItem("currentQuestionIndex", 0);
+      } catch (error) {
+        console.error("Erreur de chargement des questions:", error);
+      }
     }
   }
 
@@ -44,6 +58,12 @@ export default function CustomGamePage() {
       .slice(0, 5);
     setTopScores(scores);
   }, [selectedAmount, selectedCategory, selectedDifficulty, selectedType]);
+
+  // Sauvegarde l'état du jeu dans le localStorage
+  useEffect(() => {
+    localStorage.setItem("savedQuestions", JSON.stringify(questions));
+    localStorage.setItem("currentQuestionIndex", currentQuestionIndex);
+  }, [questions, currentQuestionIndex]);
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -87,6 +107,8 @@ export default function CustomGamePage() {
     setCurrentQuestionIndex(0);
     setHasBeatenHighScore(false);
     setIsScoreModalOpen(false);
+    localStorage.removeItem("savedQuestions");
+    localStorage.removeItem("currentQuestionIndex");
     router.push("/gameMenu");
   };
 
@@ -119,7 +141,6 @@ export default function CustomGamePage() {
           <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] w-full h-[100px] flex items-center justify-center px-5 text-center">
             <h3 className="text-white font-bold">{currentQuestion?.question}</h3>
           </div>
-          
 
           <nav className="answer_container flex flex-col items-center gap-5">
             {answers.map((answer, index) => (
