@@ -1,8 +1,29 @@
+import { saveScore } from "./scores";
+
 const baseURL = "https://opentdb.com/api.php";
-let sessionToken = null; // Cache du token pour éviter les multiples appels
+let sessionToken = null; // Cache du token pour éviter les appels répétés
 let cachedQuestions = []; // Cache pour stocker temporairement les questions
 let lastFetchTime = 0; // Temps de la dernière requête pour contrôler le délai
 const FETCH_INTERVAL = 5000; // Intervalle minimum entre les appels en ms
+
+// Sauvegarde les questions et l'index actuel dans le localStorage
+function saveGameState(questions, currentIndex) {
+  localStorage.setItem("savedQuestions", JSON.stringify(questions));
+  localStorage.setItem("currentQuestionIndex", currentIndex);
+}
+
+// Charge les questions et l'index actuel du localStorage, s'ils existent
+export function loadGameState() {
+  const savedQuestions = JSON.parse(localStorage.getItem("savedQuestions"));
+  const currentQuestionIndex = parseInt(localStorage.getItem("currentQuestionIndex"), 10);
+  return { savedQuestions, currentQuestionIndex: isNaN(currentQuestionIndex) ? 0 : currentQuestionIndex };
+}
+
+// Efface les données de jeu dans le localStorage une fois la partie terminée
+function clearGameState() {
+  localStorage.removeItem("savedQuestions");
+  localStorage.removeItem("currentQuestionIndex");
+}
 
 // Récupère un nouveau token si nécessaire
 export async function getSessionToken() {
@@ -33,9 +54,12 @@ async function refreshSessionToken() {
 async function fetchQuestions(url, retryCount = 0) {
   const currentTime = Date.now();
 
-  // Vérifie si le cache contient encore des questions
-  if (cachedQuestions.length > 0) {
-    return cachedQuestions; // Renvoie toutes les questions disponibles dans le cache
+  // Charge le jeu sauvegardé depuis le localStorage
+  const { savedQuestions, currentQuestionIndex } = loadGameState();
+
+  if (savedQuestions && savedQuestions.length > 0) {
+    cachedQuestions = savedQuestions;
+    return { questions: cachedQuestions, currentQuestionIndex };
   }
 
   // Vérifie si l'intervalle de temps minimum est respecté
@@ -50,14 +74,15 @@ async function fetchQuestions(url, retryCount = 0) {
 
     switch (data.response_code) {
       case 0: // Succès
-        cachedQuestions = data.results; // Met en cache les questions reçues
-        return cachedQuestions; // Retourne toutes les questions
+        cachedQuestions = data.results;
+        saveGameState(cachedQuestions, 0); // Sauvegarde les questions et l'index de départ
+        return { questions: cachedQuestions, currentQuestionIndex: 0 };
 
       case 3: // Token manquant ou expiré
       case 4: // Toutes les questions ont été épuisées
         await refreshSessionToken();
         const updatedUrl = `${url.split("&token=")[0]}&token=${sessionToken}`;
-        return fetchQuestions(updatedUrl); // Re-fetch avec le nouveau token
+        return fetchQuestions(updatedUrl);
 
       case 5: // Trop de requêtes
         if (retryCount < 3) {
@@ -92,4 +117,10 @@ export async function fetchQuestionsCMatch(amount, category, difficulty, type) {
   if (type && type !== "any") url += `&type=${type}`;
   url += `&token=${sessionToken}`;
   return fetchQuestions(url);
+}
+
+// Appel de clearGameState lors de l'enregistrement du score final
+export function finalizeGame(name, score, matchType) {
+  saveScore(name, score, matchType); // Enregistre le score final
+  clearGameState(); // Efface les données du jeu
 }

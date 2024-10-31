@@ -25,28 +25,28 @@ export default function ScoreModal({
 
   const handleReplay = () => {
     if (!playerName) {
-      setError(true); // Trigger error if no name is provided
-      setDisableButtons(true); // Disable buttons if no input
+      setError(true); 
+      setDisableButtons(true); 
       return;
     }
-    onSave(playerName, score); // Save score first
-    onSave(playerName); // Replay game if in quickmatch
+    onSave(playerName, score); 
+    onSave(playerName);
   };
 
   const handleReturnToMenu = () => {
     if (!playerName) {
-      setError(true); // Trigger error if no name is provided
-      setDisableButtons(true); // Disable buttons if no input
+      setError(true); 
+      setDisableButtons(true); 
       return;
     }
-    onSave(playerName, score); // Save score
-    onClose(); // Return to customMatch settings
+    onSave(playerName, score); 
+    onClose();
   };
 
   const handleInputChange = (e) => {
     setPlayerName(e.target.value);
-    setError(false); // Clear error when user starts typing
-    setDisableButtons(false); // Re-enable buttons when input is given
+    setError(false);
+    setDisableButtons(false); 
   };
 
   return (
