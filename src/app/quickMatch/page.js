@@ -118,6 +118,7 @@ export default function QuickMatch() {
               </div>
             </div>
             <h3 className="text-white font-montserrat font-bold text-[24px]">{currentQuestion?.question}</h3>
+            <span className="text-white font-montserrat font-bold text-right w-full">{`${currentQuestionIndex}/${questions.length}` }</span>
           </div>
           
           <nav className="answer_container flex flex-col items-center gap-5">
