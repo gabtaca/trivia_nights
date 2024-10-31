@@ -16,6 +16,7 @@ module.exports = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        neonPink: "#FF38D",
       },
       backgroundImage: {
         'brick-background': "url('/brick_wall.png')",
@@ -23,6 +24,9 @@ module.exports = {
       boxShadow: {
         'box-neon-pink': '0 4px 30px rgba(255, 0, 255, 0.7), 0 0 60px rgba(255, 57, 212, 0.7)', 
       },
+      dropShadow: {
+        'solid-pink': ' [5px_5px_0px_0px_rgba(109,40,217,1)]', 
+      }
     },
   },
   plugins: [

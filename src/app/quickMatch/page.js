@@ -1,5 +1,5 @@
+// QuickMatch.js
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchQuestionsQMatch, getSessionToken } from "../utilities/fetch";
@@ -29,8 +29,12 @@ export default function QuickMatch() {
   }
 
   useEffect(() => {
-    loadQuickMatchQuestions();
+    loadQuestions();
+
+    // Récupération et tri des meilleurs scores pour l'affichage rotatif
     const scores = getScores("quickMatch")
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
       .sort((a, b) => b.score - a.score)
       .slice(0, 5);
     setTopScores(scores);
@@ -107,12 +111,15 @@ export default function QuickMatch() {
           <div className="myscore_container text-[#61FF64] font-sixtyFour text-[16px]">
             <h2>Score: {score * 10000}</h2>
           </div>
-
-          <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] w-full h-[100px] flex flex-col items-center justify-center px-5 rounded-2xl text-center">
-            <h3 className="text-white font-bold">{currentQuestion?.question}</h3>
-            <div className="question-counter flex w-full justify-end bottom-5 right-5 text-pink-100 font-bold">
-            {currentQuestionIndex + 1} / {questions.length}
-          </div>
+          <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] shadow-[3px_4px_0px_0px_rgba(255,57,212)] w-full h-full flex flex-col  gap-5  items-center text-center p-14 justify-between rounded-xl">
+            <div className="question_header flex flex-row font-tiltNeon text-[35px] w-full justify-between m-0">
+              <h2 className="font-bold text-shadow-neon-pink text-stroke-pink absolute">{currentQuestion?.type}</h2>
+              <h2 className="text-white font-bold relative">{currentQuestion?.type}</h2>
+              <div className="timer_container">
+                <PieTimer duration={20} /> {/* Timer de 20 secondes */}
+              </div>
+            </div>
+            <h3 className="text-white font-montserrat font-bold text-[24px]">{currentQuestion?.question}</h3>
           </div>
           
           <nav className="answer_container flex flex-col items-center gap-5">
@@ -131,7 +138,6 @@ export default function QuickMatch() {
           </nav>
         </div>
       </main>
-
       <footer className="footer flex justify-center items-center p-4 space-x-4">
         <button
           onClick={() => testHighScore(handleReplay)}
