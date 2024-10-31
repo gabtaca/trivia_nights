@@ -1,4 +1,3 @@
-// QuickMatch.js
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -29,12 +28,10 @@ export default function QuickMatch() {
   }
 
   useEffect(() => {
-    loadQuestions();
+    loadQuickMatchQuestions();
 
     // Récupération et tri des meilleurs scores pour l'affichage rotatif
     const scores = getScores("quickMatch")
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5);
       .sort((a, b) => b.score - a.score)
       .slice(0, 5);
     setTopScores(scores);
