@@ -1,19 +1,26 @@
-/* ScoreModal.js */
-
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { saveScore } from "../utilities/scores";
+import { clearGameState } from "../utilities/fetch";
 import { launchFireworks } from "../utilities/fireworks";
 
 export default function ScoreModal({
   isOpen,
   onClose,
-  onSave,
   score,
   isBestScore,
   matchType,
+  setQuestions,
+  setScore,
+  setCurrentQuestionIndex,
+  setHasBeatenHighScore,
+  setIsScoreModalOpen,
+  loadQuickMatchQuestions,
 }) {
   const [playerName, setPlayerName] = useState("");
-  const [error, setError] = useState(false); // message d'erreur pour le nom
-  const [disableButtons, setDisableButtons] = useState(false); // controle si les boutons doivent être enlevé
+  const [error, setError] = useState(false);
+  const [disableButtons, setDisableButtons] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (isOpen && isBestScore) {
@@ -25,28 +32,58 @@ export default function ScoreModal({
 
   const handleReplay = () => {
     if (!playerName) {
-      setError(true); 
-      setDisableButtons(true); 
+      setError(true);
+      setDisableButtons(true);
       return;
     }
-    onSave(playerName, score); 
-    onSave(playerName);
+
+    const finalScore = score;
+    saveScore(playerName, finalScore, matchType);
+    clearGameState(matchType);
+
+    // Réinitialiser les états locaux
+    setQuestions([]);
+    setScore(0);
+    setCurrentQuestionIndex(0);
+    setHasBeatenHighScore(false);
+    setIsScoreModalOpen(false);
+
+    if (matchType === "quickMatch") {
+      // Démarrer une nouvelle partie de Quick Game
+      if (loadQuickMatchQuestions) {
+        loadQuickMatchQuestions();
+      }
+    } else {
+      // Rediriger vers la page de sélection des options pour Custom Match
+      router.push("/customMatch");
+    }
   };
 
   const handleReturnToMenu = () => {
     if (!playerName) {
-      setError(true); 
-      setDisableButtons(true); 
+      setError(true);
+      setDisableButtons(true);
       return;
     }
-    onSave(playerName, score); 
-    onClose();
+
+    const finalScore = score;
+    saveScore(playerName, finalScore, matchType);
+    clearGameState(matchType);
+
+    // Réinitialiser les états locaux
+    setQuestions([]);
+    setScore(0);
+    setCurrentQuestionIndex(0);
+    setHasBeatenHighScore(false);
+    setIsScoreModalOpen(false);
+
+    router.push("/gameMenu");
   };
 
   const handleInputChange = (e) => {
     setPlayerName(e.target.value);
     setError(false);
-    setDisableButtons(false); 
+    setDisableButtons(false);
   };
 
   return (

@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
+import arrowDownIcon from '/public/arrow_down.svg'; // Import the image
 
-// Composant de base pour les menus déroulants personnalisés
-function CustomDropdown({ label, selectedValue, setSelectedValue, options }) {
+function CustomDropdown({
+  label,
+  selectedValue,
+  setSelectedValue,
+  options,
+  buttonStyle = {},
+  dropdownStyle = {},
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -12,7 +19,6 @@ function CustomDropdown({ label, selectedValue, setSelectedValue, options }) {
     setIsOpen(false);
   };
 
-  // Gère le clic à l'extérieur
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -33,12 +39,13 @@ function CustomDropdown({ label, selectedValue, setSelectedValue, options }) {
 
   return (
     <div ref={dropdownRef} className="relative inline-block w-[300px]">
-      {/* Bouton pour ouvrir le menu déroulant */}
+      {/* Button with imported image */}
       <div
         onClick={toggleDropdown}
-        className="font-montserrat font-bold text-white text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] px-[20px] py-[15px] cursor-pointer flex justify-between items-center"
+        className="font-montserrat font-bold text-center px-[20px] py-[15px] cursor-pointer flex justify-between items-center"
         style={{
-          backgroundImage: "url('./arrow_down.svg')",
+          ...buttonStyle,
+          backgroundImage: `url(${arrowDownIcon.src})`, // Use the imported image
           backgroundRepeat: "no-repeat",
           backgroundPosition: "right 1rem center",
         }}
@@ -46,18 +53,25 @@ function CustomDropdown({ label, selectedValue, setSelectedValue, options }) {
         {options.find((opt) => opt.value === selectedValue)?.label || label}
       </div>
 
-      {/* Overlay div */}
       {isOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center z-30"
-          onClick={() => setIsOpen(false)} // Ferme le menu si on clique sur l'overlay
+          onClick={() => setIsOpen(false)}
         >
-          <div className="absolute bg-[#430086] border-[#FF38D3] border-[3.2px] mt-2 rounded-[17px] shadow-lg z-40">
-            {options.map((opt) => (
+          <div
+            className="absolute mt-2 rounded-[17px] shadow-lg z-40 overflow-y-auto"
+            style={dropdownStyle}
+          >
+            {options.map((opt, index) => (
               <div
                 key={opt.value}
-                onClick={() => handleSelect(opt.value)}
-                className="text-white text-center py-2 px-4 cursor-pointer hover:bg-[#5a0da6] rounded-[12px]"
+                onClick={index === 0 ? null : () => handleSelect(opt.value)}
+                className={`text-white text-center py-2 px-4 cursor-pointer hover:bg-[#5a0da6] rounded-[12px] ${
+                  index === 0 ? "cursor-not-allowed text-gray-400" : ""
+                }`}
+                style={{
+                  pointerEvents: index === 0 ? "none" : "auto",
+                }}
               >
                 {opt.label}
               </div>
@@ -69,37 +83,81 @@ function CustomDropdown({ label, selectedValue, setSelectedValue, options }) {
   );
 }
 
-// Composants spécifiques pour chaque menu déroulant
-
-export function QuestionAmountDropdown({ selectedAmount, setSelectedAmount, amounts }) {
+// Composants spécifiques pour chaque menu déroulant avec styles uniques
+export function QuestionAmountDropdown({
+  selectedAmount,
+  setSelectedAmount,
+  amounts,
+}) {
   return (
     <CustomDropdown
       label="Nombre de questions"
       selectedValue={selectedAmount}
       setSelectedValue={setSelectedAmount}
       options={amounts}
+      buttonStyle={{
+        backgroundColor: "#430086",
+        border: "3.2px solid #FF38D3",
+        color: "#FFFFFF",
+        borderRadius: "20px",
+      }}
+      dropdownStyle={{
+        backgroundColor: "#222222",
+        border: "2px solid #FF38D4",
+      }}
     />
   );
 }
 
-export function CategoryDropdown({ selectedCategory, setSelectedCategory, categories }) {
+export function CategoryDropdown({
+  selectedCategory,
+  setSelectedCategory,
+  categories,
+}) {
   return (
     <CustomDropdown
       label="Catégorie"
       selectedValue={selectedCategory}
       setSelectedValue={setSelectedCategory}
       options={categories}
+      buttonStyle={{
+        backgroundColor: "#430086",
+        border: "3.2px solid #FF38D3",
+        color: "#FFFFFF",
+        borderRadius: "20px",
+      }}
+      dropdownStyle={{
+        backgroundColor: "#222222",
+        border: "2px solid #FF38D4",
+        borderRadius: "12px",
+        height: "50%", 
+        overflowY: "auto", 
+      }}
     />
   );
 }
 
-export function DifficultyDropdown({ selectedDifficulty, setSelectedDifficulty, difficulties }) {
+export function DifficultyDropdown({
+  selectedDifficulty,
+  setSelectedDifficulty,
+  difficulties,
+}) {
   return (
     <CustomDropdown
       label="Difficulté"
       selectedValue={selectedDifficulty}
       setSelectedValue={setSelectedDifficulty}
       options={difficulties}
+      buttonStyle={{
+        backgroundColor: "#430086",
+        border: "3.2px solid #FF38D3",
+        color: "#FFFFFF",
+        borderRadius: "20px",
+      }}
+      dropdownStyle={{
+        backgroundColor: "#222222",
+        border: "2px solid #FF38D4",
+      }}
     />
   );
 }
@@ -111,6 +169,16 @@ export function TypeDropdown({ selectedType, setSelectedType, types }) {
       selectedValue={selectedType}
       setSelectedValue={setSelectedType}
       options={types}
+      buttonStyle={{
+        backgroundColor: "#430086",
+        border: "3.2px solid #FF38D3",
+        color: "#FFFFFF",
+        borderRadius: "20px",
+      }}
+      dropdownStyle={{
+        backgroundColor: "#222222",
+        border: "2px solid #FF38D4",
+      }}
     />
   );
 }

@@ -1,133 +1,195 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { fetchQuestionsCMatch } from "../../utilities/fetch";
+import {
+  fetchQuestionsCMatch,
+  saveGameState,
+  loadGameState,
+  clearGameState,
+} from "../../utilities/fetch";
 import { saveScore, getScores } from "../../utilities/scores";
 import RotatingScores from "../../utilities/RotatingScores";
 import ScoreModal from "../../utilities/ScoreModal";
-import { testHighScore, clearScores } from "../../utilities/testHighscore";
+import PieTimer from "../../utilities/pieTimer";
+import HighScoreModal from "../../utilities/HighScoreModal";
+
+function decodeHtmlEntities(text) {
+  const textArea = document.createElement("textarea");
+  textArea.innerHTML = text;
+  return textArea.value;
+}
 
 export default function CustomGamePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedAmount = searchParams.get("amount");
-  const selectedCategory = searchParams.get("category");
-  const selectedDifficulty = searchParams.get("difficulty");
-  const selectedType = searchParams.get("type");
 
+  const [queryParams] = useState({
+    amount: searchParams.get("amount"),
+    category: searchParams.get("category"),
+    difficulty: searchParams.get("difficulty"),
+    type: searchParams.get("type"),
+  });
+  const [showHighScores, setShowHighScores] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [topScores, setTopScores] = useState([]);
   const [isScoreModalOpen, setIsScoreModalOpen] = useState(false);
   const [hasBeatenHighScore, setHasBeatenHighScore] = useState(false);
-  const [matchType] = useState("customMatch");
+  const [timeLeft, setTimeLeft] = useState(20);
+  const matchType = "customMatch";
+  const duration = 20;
+  const goToMenu = () => {
+    router.push("/gameMenu");
+  };
 
-  // Charger les questions depuis le localStorage ou via l'API
-  async function loadQuestions() {
-    const savedQuestions = JSON.parse(localStorage.getItem("savedQuestions"));
-    const savedIndex = parseInt(localStorage.getItem("currentQuestionIndex"), 10) || 0;
+  useEffect(() => {
+    const savedGameState = loadGameState(matchType);
 
-    // Si des questions sont trouvées dans le localStorage, les utiliser
-    if (savedQuestions && savedQuestions.length > 0) {
-      setQuestions(savedQuestions);
-      setCurrentQuestionIndex(savedIndex);
+    if (
+      savedGameState?.savedQuestions?.length > 0 &&
+      savedGameState.savedQuestions
+    ) {
+      setQuestions(savedGameState.savedQuestions);
+      setCurrentQuestionIndex(savedGameState.currentQuestionIndex || 0);
+      setScore(savedGameState.currentScore || 0);
+      setTimeLeft(duration);
     } else {
-      // Sinon, faire appel à l'API pour récupérer de nouvelles questions
+      loadNewQuestions();
+    }
+  }, []);
+
+  async function loadNewQuestions() {
+    const hasValidQueryParams =
+      queryParams.amount &&
+      queryParams.category &&
+      queryParams.difficulty &&
+      queryParams.type;
+
+    if (hasValidQueryParams) {
       try {
         const questionData = await fetchQuestionsCMatch(
-          selectedAmount,
-          selectedCategory,
-          selectedDifficulty,
-          selectedType
+          queryParams.amount,
+          queryParams.category,
+          queryParams.difficulty,
+          queryParams.type
         );
         setQuestions(questionData.questions);
-        setCurrentQuestionIndex(questionData.currentQuestionIndex || 0);
-        localStorage.setItem("savedQuestions", JSON.stringify(questionData.questions));
-        localStorage.setItem("currentQuestionIndex", 0);
+        setCurrentQuestionIndex(0);
+        setScore(0);
+        setTimeLeft(duration);
       } catch (error) {
         console.error("Erreur de chargement des questions:", error);
       }
+    } else {
+      router.push("/customMatch");
     }
   }
 
   useEffect(() => {
-    loadQuestions();
-    const scores = getScores("customMatch")
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5);
-    setTopScores(scores);
-  }, [selectedAmount, selectedCategory, selectedDifficulty, selectedType]);
-
-  // Sauvegarde l'état du jeu dans le localStorage
-  useEffect(() => {
-    localStorage.setItem("savedQuestions", JSON.stringify(questions));
-    localStorage.setItem("currentQuestionIndex", currentQuestionIndex);
-  }, [questions, currentQuestionIndex]);
+    if (questions.length > 0) {
+      saveGameState(questions, currentQuestionIndex, score, matchType);
+    }
+  }, [questions, currentQuestionIndex, score]);
 
   const currentQuestion = questions[currentQuestionIndex];
 
-  const answers = currentQuestion
-    ? [...currentQuestion.incorrect_answers, currentQuestion.correct_answer].sort(() => Math.random() - 0.5)
-    : [];
+  const answers = useMemo(() => {
+    if (currentQuestion) {
+      return [
+        ...currentQuestion.incorrect_answers,
+        currentQuestion.correct_answer,
+      ]
+        .map(decodeHtmlEntities)
+        .sort(() => Math.random() - 0.5);
+    }
+    return [];
+  }, [currentQuestion]);
+
+  const handleTimeUp = () => {
+    handleAnswer(false);
+  };
 
   const handleAnswer = (isCorrect) => {
-    let updatedScore = score;
-    if (isCorrect) {
-      updatedScore = score + 1;
-      setScore(updatedScore);
-    }
+    // Base score and penalty per second
+    const baseScore = 200000;
+    const penaltyPerSecond = 10000;
 
-    const allScores = getScores("customMatch");
-    const highestScore = allScores.length > 0 ? Math.max(...allScores.map((s) => s.score)) : 0;
-    const currentScoreValue = updatedScore * 10000;
-    if (currentScoreValue > highestScore && !hasBeatenHighScore) {
-      setHasBeatenHighScore(true);
-    }
+    // Calculate time-based score
+    const timeScore = isCorrect
+      ? Math.max(
+          baseScore - Math.floor((duration - timeLeft) * penaltyPerSecond),
+          0
+        )
+      : 0;
+    let updatedScore = score + timeScore; // Add time-based score if the answer is correct
+    setScore(updatedScore);
 
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setTimeLeft(duration); // Reset timer for the next question
     } else {
+      if (checkIfBestScore(updatedScore)) setHasBeatenHighScore(true);
       setIsScoreModalOpen(true);
     }
   };
 
+  function checkIfBestScore(currentScore) {
+    const scores = getScores(matchType);
+    const highestScore = scores.length
+      ? Math.max(...scores.map((s) => s.score))
+      : 0;
+    return currentScore > highestScore;
+  }
+
   const handleReplay = (name) => {
-    saveScore(name, score * 10000, "customMatch");
+    saveScore(name, score, matchType);
+    clearGameState(matchType);
+    setQuestions([]);
     setScore(0);
     setCurrentQuestionIndex(0);
     setHasBeatenHighScore(false);
-    loadQuestions();
     setIsScoreModalOpen(false);
+    router.push("/customMatch");
   };
 
-  const handleReturnToMenu = (name) => {
-    saveScore(name, score * 10000, "customMatch");
-    setScore(0);
-    setCurrentQuestionIndex(0);
-    setHasBeatenHighScore(false);
-    setIsScoreModalOpen(false);
-    localStorage.removeItem("savedQuestions");
-    localStorage.removeItem("currentQuestionIndex");
-    router.push("/gameMenu");
+  const handleTimeChange = (newTimeLeft) => {
+    setTimeLeft(newTimeLeft);
   };
 
   return (
     <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
       <div className="main_modal-custommatch-banner absolute z-50 top-0 p-4 bg-black flex items-center space-x-5 w-full">
-        <button
-          id="btn_scores"
-          className="flex flex-row justify-center items-center bg-black font-sixtyFour text-[#FEFFB2] w-[150px] px-[10px] py-[6px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[2px_2px_0px_0px_#FEFFB2]"
-        >
-          <span className="text-[#FEFFB2] flex text-[6px] tracking-wider">
-            HIGH SCORES
-          </span>
-          <span className="text-[#FEFFB2] rotate-90 ml-2">&gt;</span>
-        </button>
+        <div>
+          <button
+            id="btn_highScores-gameMenu"
+            className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[215px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
+            onClick={() => setShowHighScores(!showHighScores)} // Alterne l'état d'ouverture
+          >
+            <p className="text-[#FEFFB2] pl-5 text-[16px] tracking-wider">
+              SCORES
+            </p>
+            <p
+              className={`text-lg text-[#FEFFB2] items-baseline ${
+                showHighScores ? "-rotate-90" : "rotate-90"
+              } transition-transform duration-200`} // Ajoute une transition fluide
+            >
+              &gt;
+            </p>
+          </button>
+
+          {showHighScores && (
+            <HighScoreModal onClose={() => setShowHighScores(false)} />
+          )}
+        </div>
         <RotatingScores topScores={topScores} />
       </div>
-
-      <main className={`flex flex-col justify-center items-center w-full h-full ${isScoreModalOpen ? "hidden" : ""}`}>
+      <main
+        className={`flex flex-col justify-center items-center w-full h-full ${
+          isScoreModalOpen ? "hidden" : ""
+        }`}
+      >
+        <div className="w-full h-[15%]"></div>
         <div className="main_modal-custommatch top-0 z-10 flex flex-col gap-10 justify-center items-center w-[90%] h-[90%]">
           {hasBeatenHighScore && (
             <div className="text-yellow-400 font-bold text-lg animate-bounce">
@@ -135,12 +197,48 @@ export default function CustomGamePage() {
             </div>
           )}
           <div className="myscore_container text-[#61FF64] font-sixtyFour text-[16px]">
-            <h2>Score: {score * 10000}</h2>
+            <h2>Score: {score}</h2>
           </div>
 
-          <div className="question_container bg-[#2B0C39] border-r-[#FF38D4] w-full h-[100px] flex items-center justify-center px-5 text-center">
-            <h3 className="text-white font-bold">{currentQuestion?.question}</h3>
-          </div>
+          {currentQuestion && (
+            <div className="question_container bg-[#2B0C39] bg-opacity-65 border-r-[#FF38D4] shadow-[3px_4px_0px_0px_rgba(255,57,212)] w-full h-full flex flex-col gap-5 items-center text-center p-10 justify-between rounded-3xl">
+              <div className="question_header opacity-100 flex flex-row text-center self-center font-tiltNeon text-[30px] w-full justify-center m-0">
+                <h2 className="flex font-bold text-shadow-neon-pink text-stroke-pink absolute">
+                  {currentQuestion.type === "multiple"
+                    ? "Choix Multiple"
+                    : currentQuestion.type === "boolean"
+                    ? "Vrai ou Faux"
+                    : currentQuestion.type}
+                </h2>
+                <h2 className="text-white font-bold absolute">
+                  {currentQuestion.type === "multiple"
+                    ? "Choix Multiple"
+                    : currentQuestion.type === "boolean"
+                    ? "Vrai ou Faux"
+                    : currentQuestion.type}
+                </h2>
+                <div className="w-full flex flex-row justify-between">
+                  <div className="w-[40px] h-[40px]"></div>
+                  <div className="timer_container relative justify-end w-[40px] h-[40px]">
+                    <PieTimer
+                      key={currentQuestionIndex}
+                      duration={duration}
+                      onTimeUp={handleTimeUp}
+                      onTimeChange={handleTimeChange}
+                    />
+                  </div>
+                </div>
+              </div>
+              <h3 className="text-white font-montserrat font-semibold text-[16px]">
+                {decodeHtmlEntities(currentQuestion.question)}
+              </h3>
+              <div className="w-full flex flex-row justify-end">
+                <div className="question-progress flex text-white font-bold">
+                  {currentQuestionIndex + 1}/{questions.length}
+                </div>
+              </div>
+            </div>
+          )}
 
           <nav className="answer_container flex flex-col items-center gap-5">
             {answers.map((answer, index) => (
@@ -148,37 +246,54 @@ export default function CustomGamePage() {
                 key={index}
                 id="btn_reponse"
                 className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center"
-                onClick={() => handleAnswer(answer === currentQuestion?.correct_answer)}
+                onClick={() =>
+                  handleAnswer(answer === currentQuestion.correct_answer)
+                }
               >
                 {answer}
               </button>
             ))}
           </nav>
         </div>
+        <div className="w-full">
+          <button
+            onClick={goToMenu}
+            className="btn_homeLogo-customMatch flex flex-col cursor-pointer pt-5 pb-3 w-full"
+          >
+            <div className="flex flex-col cursor-pointer pl-10">
+              <div className="ctrl_logo_h1 flex blur-[0.5px]">
+                <h1 className="font-tiltNeon text-[40px] text-shadow-neon-pink text-stroke-pink text-pink-100">
+                  TRIVIA
+                </h1>
+                <h1 className="font-tiltNeon text-[40px] absolute text-pink-100">
+                  TRIVIA
+                </h1>
+              </div>
+              <div className="ctrl_logo_h2 flex w-full justify-end mt-[-10px] ml-[20px] blur-[0.5px]">
+                <h2 className="font-girlNextDoor font-thin text-[25px] text-shadow-neon-purple text-stroke-purple text-pink-100">
+                  NIGHTS
+                </h2>
+                <h2 className="font-girlNextDoor font-thin text-[25px] absolute text-pink-100">
+                  NIGHTS
+                </h2>
+              </div>
+            </div>
+          </button>
+        </div>
       </main>
-
-      <footer className="footer flex justify-center items-center p-4 space-x-4">
-        <button
-          onClick={() => testHighScore(handleReplay)}
-          className="bg-green-500 text-white px-4 py-2 rounded-lg"
-        >
-          Tester le Meilleur Score
-        </button>
-        <button
-          onClick={clearScores}
-          className="bg-red-500 text-white px-4 py-2 rounded-lg"
-        >
-          Effacer les Scores
-        </button>
-      </footer>
 
       <ScoreModal
         isOpen={isScoreModalOpen}
-        onClose={handleReturnToMenu}
-        onSave={handleReplay}
-        score={score * 10000}
+        onClose={() => setIsScoreModalOpen(false)}
+        score={score}
         isBestScore={hasBeatenHighScore}
         matchType={matchType}
+        setQuestions={setQuestions}
+        setScore={setScore}
+        setCurrentQuestionIndex={setCurrentQuestionIndex}
+        setHasBeatenHighScore={setHasBeatenHighScore}
+        setIsScoreModalOpen={setIsScoreModalOpen}
+        loadQuickMatchQuestions={loadNewQuestions}
       />
     </div>
   );

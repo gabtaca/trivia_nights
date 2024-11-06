@@ -1,29 +1,47 @@
-/*StartScreen*/
-
 "use client";
-
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function StartScreen() {
   const router = useRouter();
+  const [showQuickMatchButton, setShowQuickMatchButton] = useState(false);
+  const [showCustomMatchButton, setShowCustomMatchButton] = useState(false);
 
   useEffect(() => {
-    // Initialize base score for quickMatch if it doesn't exist
-    const quickMatchScores = JSON.parse(localStorage.getItem("quickMatch"));
-    if (!quickMatchScores) {
-      localStorage.setItem("quickMatch", JSON.stringify([{ name: "", score: '0000000', date: new Date().toLocaleDateString() }]));
-    }
+    // Initialiser les listes de high scores pour quickMatch et customMatch
+    const initializeHighScores = (matchType) => {
+      const scores = JSON.parse(localStorage.getItem(`${matchType}`));
+      if (!scores) {
+        localStorage.setItem(
+          `${matchType}`,
+          JSON.stringify(Array(5).fill({ name: "xxxxxxx", score: 0, date: "0000-00-00" }))
+        );
+      }
+    };
 
-    // Initialize base score for customMatch if it doesn't exist
-    const customMatchScores = JSON.parse(localStorage.getItem("customMatch"));
-    if (!customMatchScores) {
-      localStorage.setItem("customMatch", JSON.stringify([{ name: "", score: '0000000', date: new Date().toLocaleDateString() }]));
+    initializeHighScores("quickMatch");
+    initializeHighScores("customMatch");
+
+    // Vérifier si une partie sauvegardée existe pour quickMatch ou customMatch
+    const quickMatchSaved = localStorage.getItem("quickMatch_savedQuestions");
+    const customMatchSaved = localStorage.getItem("customMatch_savedQuestions");
+
+    if (quickMatchSaved && JSON.parse(quickMatchSaved).length > 0) {
+      setShowQuickMatchButton(true);
+    }
+    if (customMatchSaved && JSON.parse(customMatchSaved).length > 0) {
+      setShowCustomMatchButton(true);
     }
   }, []);
 
-  const startGame = () => {
-    router.push("/gameMenu");
+  const startGame = () => router.push("/gameMenu");
+
+  const continueQuickMatch = () => {
+    router.push("/quickMatch");
+  };
+
+  const continueCustomMatch = () => {
+    router.push("/customMatch/customGamePage");
   };
 
   return (
@@ -31,8 +49,8 @@ export default function StartScreen() {
       <div className="bg_gradient-top z-0 absolute top-0 w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
       <div className="bg_gradient-bot z-0 absolute bottom-0 w-full h-[20%] bg-gradient-to-t from-slate-900 to-transparent"></div>
       <main className="flex flex-col justify-center items-center w-full h-full">
-        <div className="main_modal-homeMenu z-40 flex flex-col items-center bg-[#2B0B38] bg-opacity-[79%] w-[90%] h-[80%] rounded-[50px] justify-evenly">
-          <div className="logo">
+        <div className="main_modal-homeMenu md:outline-scintillant z-40 flex flex-col items-center bg-[#2B0B38] bg-opacity-[79%] w-[90%] h-[80%] rounded-[50px] justify-evenly">
+        <div className="logo">
             <div className="ctrl_logo_h1 flex blur-[1px]">
               <h1 className="font-tiltNeon text-[109px] text-shadow-neon-pink text-stroke-pink text-pink-100">
                 TRIVIA
@@ -62,13 +80,30 @@ export default function StartScreen() {
               et battez les scores des génies avant vous!
             </p>
           </div>
-
           <button
             onClick={startGame}
             className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center"
           >
-            START
+            COMMENCER
           </button>
+
+          {showQuickMatchButton && (
+            <button
+              onClick={continueQuickMatch}
+              className="font-montserrat font-bold text-[#430086] text-[12px] text-center border-[3.2px] rounded-[17px] border-[#00c72b] bg-[#fff94f] w-[200px]w-[200px] px-[20px] py-[12px] items-center mt-4"
+            >
+              CONTINUER PARTIE RAPIDE
+            </button>
+          )}
+
+          {showCustomMatchButton && (
+            <button
+              onClick={continueCustomMatch}
+              className="font-montserrat font-bold text-[#430086] text-[12px] text-center border-[3.2px] rounded-[17px] border-[#00c72b] bg-[#fff94f] w-[200px]w-[200px] px-[20px] py-[12px] items-center mt-4"
+            >
+              CONTINUER PARTIE PERSONNALISÉE
+            </button>
+          )}
         </div>
       </main>
     </div>

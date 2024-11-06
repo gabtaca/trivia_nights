@@ -1,17 +1,44 @@
-/*gameMenue.js*/
 "use client";
 
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { loadGameState } from "../utilities/fetch";
+import HighScoreModal from "../utilities/HighScoreModal";
 
 export default function GameMenu() {
-  const router = useRouter(); // Define router within GameMenu
+  const router = useRouter();
+  const [showQuickMatchButton, setShowQuickMatchButton] = useState(false);
+  const [hasSavedCustomGame, setHasSavedCustomGame] = useState(false);
+  const [showHighScores, setShowHighScores] = useState(false);
+
+  useEffect(() => {
+    // Vérifier s'il y a un état de jeu sauvegardé pour la partie rapide
+    const quickMatchState = loadGameState("quickMatch");
+    if (quickMatchState?.savedQuestions?.length > 0) {
+      setShowQuickMatchButton(true);
+    }
+
+    // Vérifier s'il y a un état de jeu sauvegardé pour la partie personnalisée
+    const customMatchState = loadGameState("customMatch");
+    if (customMatchState?.savedQuestions?.length > 0) {
+      setHasSavedCustomGame(true);
+    }
+  }, []);
 
   const quickMatch = () => {
-    router.push("/quickMatch"); 
+    router.push("/quickMatch");
+  };
+
+  const continueQuickMatch = () => {
+    router.push("/quickMatch");
   };
 
   const customMatch = () => {
-    router.push("/customMatch"); 
+    router.push("/customMatch");
+  };
+
+  const continueCustomMatch = () => {
+    router.push("/customMatch/customGamePage");
   };
 
   return (
@@ -39,34 +66,64 @@ export default function GameMenu() {
             </div>
           </div>
 
-          <nav className="flex flex-col items-center gap-10">
+          <nav className="flex flex-col items-center gap-6">
             <button
               onClick={quickMatch}
               id="btn_quickMatch"
               className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center"
             >
-                PARTIE RAPIDE
+              PARTIE RAPIDE
             </button>
             <button
-            onClick={customMatch}
+              onClick={customMatch}
               id="btn_cstmMatch"
               className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center"
             >
-              PARTIE PERSONALISÉE
+              PARTIE PERSONNALISÉE
             </button>
+
+            {showQuickMatchButton && (
+              <button
+                onClick={continueQuickMatch}
+                className="font-montserrat font-bold text-[#430086] text-[12px] text-center border-[3.2px] rounded-[17px] border-[#00c72b] bg-[#fff94f] w-[200px] px-[20px] py-[12px] items-center mt-4"
+              >
+                CONTINUER PARTIE RAPIDE
+              </button>
+            )}
+
+            {hasSavedCustomGame && (
+              <button
+                onClick={continueCustomMatch}
+                id="btn_continueCustomMatch"
+                className="font-montserrat font-bold text-[#430086] text-[12px] text-center border-[3.2px] rounded-[17px] border-[#00c72b] bg-[#fff94f] w-[200px] px-[20px] py-[12px] items-center"
+              >
+                CONTINUER PARTIE PERSONNALISÉE
+              </button>
+            )}
           </nav>
 
-          <button
-            id="btn_scores"
-            className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[215px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
-          >
-            <span className="text-[#FEFFB2] pl-5 text-[16px] tracking-wider">
-              SCORES
-            </span>
-            <span className="text-lg text-[#FEFFB2] items-baseline -rotate-90">
-              &gt;
-            </span>
-          </button>
+          <div>
+            <button
+              id="btn_highScores-gameMenu"
+              className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[215px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
+              onClick={() => setShowHighScores(!showHighScores)} // Alterne l'état d'ouverture
+            >
+              <p className="text-[#FEFFB2] pl-5 text-[16px] tracking-wider">
+                SCORES
+              </p>
+              <p
+                className={`text-lg text-[#FEFFB2] items-baseline ${
+                  showHighScores ? "rotate-90" : "-rotate-90"
+                } transition-transform duration-200`} // Ajoute une transition fluide
+              >
+                &gt;
+              </p>
+            </button>
+
+            {showHighScores && (
+              <HighScoreModal onClose={() => setShowHighScores(false)} />
+            )}
+          </div>
         </div>
       </main>
     </div>

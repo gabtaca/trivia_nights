@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const plugin = require('tailwindcss/plugin');
+
 module.exports = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -23,14 +25,18 @@ module.exports = {
       },
       boxShadow: {
         'box-neon-pink': '0 4px 30px rgba(255, 0, 255, 0.7), 0 0 60px rgba(255, 57, 212, 0.7)', 
+        'scintillant': '0 0 10px rgba(255, 255, 200, 0.5), 0 0 20px rgba(255, 255, 200, 0.4)',
       },
       dropShadow: {
-        'solid-pink': ' [5px_5px_0px_0px_rgba(109,40,217,1)]', 
+        'solid-pink': '[5px_5px_0px_0px_rgba(109,40,217,1)]', 
+      },
+      animation: {
+        twinkle: 'twinkle 2s infinite alternate',
       }
     },
   },
   plugins: [
-    function ({ addUtilities }) {
+    plugin(function ({ addUtilities }) {
       addUtilities({
         '.text-shadow-neon-pink': {
           textShadow: '0 0 30px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 57, 212, 0.9)',
@@ -53,7 +59,6 @@ module.exports = {
         '.font-bled-2': {
           fontVariationSettings: '"BLED" 2',
         },
-        //"SCAN"
         '.font-scan-0': {
           fontVariationSettings: '"SCAN" -5',
         },
@@ -63,11 +68,17 @@ module.exports = {
         '.font-scan-2': {
           fontVariationSettings: '"SCAN" 2',
         },
-        // "BLED" et "SCAN"
         '.font-bled-1-scan-1': {
           fontVariationSettings: '"BLED" 1, "SCAN" 1',
         },
+        '.outline-scintillant': {
+          outline: '25px dotted rgba(255, 255, 200, 0.8)',
+          'outline-offset': '0px',
+          'border-radius': '50px',
+          'box-shadow': '0 0 10px rgba(255, 255, 200, 0.5), 0 0 20px rgba(255, 255, 200, 0.4)',
+          animation: 'twinkle 2s infinite alternate',
+        },
       });
-    },
+    })
   ],
 };
