@@ -25,7 +25,7 @@ export default function RotatingScores({ topScores }) {
     if (topScores.length > 0) {
       const scoreInterval = setInterval(() => {
         setDisplayedScoreIndex((prevIndex) => (prevIndex + 1) % topScores.length);
-      }, 1000);
+      }, 1500);
 
       return () => clearInterval(scoreInterval);
     }

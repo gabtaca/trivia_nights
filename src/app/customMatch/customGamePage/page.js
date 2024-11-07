@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   fetchQuestionsCMatch,
@@ -23,12 +23,13 @@ export default function CustomGamePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [queryParams] = useState({
-    amount: searchParams.get("amount"),
-    category: searchParams.get("category"),
-    difficulty: searchParams.get("difficulty"),
-    type: searchParams.get("type"),
+  const [queryParams, setQueryParams] = useState({
+    amount: null,
+    category: null,
+    difficulty: null,
+    type: null,
   });
+
   const [showHighScores, setShowHighScores] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -39,27 +40,22 @@ export default function CustomGamePage() {
   const [timeLeft, setTimeLeft] = useState(20);
   const matchType = "customMatch";
   const duration = 20;
+
   const goToMenu = () => {
     router.push("/gameMenu");
   };
 
+  // Retrieve query parameters from searchParams and store them in state
   useEffect(() => {
-    const savedGameState = loadGameState(matchType);
+    setQueryParams({
+      amount: searchParams.get("amount"),
+      category: searchParams.get("category"),
+      difficulty: searchParams.get("difficulty"),
+      type: searchParams.get("type"),
+    });
+  }, [searchParams]);
 
-    if (
-      savedGameState?.savedQuestions?.length > 0 &&
-      savedGameState.savedQuestions
-    ) {
-      setQuestions(savedGameState.savedQuestions);
-      setCurrentQuestionIndex(savedGameState.currentQuestionIndex || 0);
-      setScore(savedGameState.currentScore || 0);
-      setTimeLeft(duration);
-    } else {
-      loadNewQuestions();
-    }
-  }, []);
-
-  async function loadNewQuestions() {
+  const loadNewQuestions = useCallback(async () => {
     const hasValidQueryParams =
       queryParams.amount &&
       queryParams.category &&
@@ -84,13 +80,29 @@ export default function CustomGamePage() {
     } else {
       router.push("/customMatch");
     }
-  }
+  }, [queryParams, duration, router]);
+
+  useEffect(() => {
+    const savedGameState = loadGameState(matchType);
+
+    if (
+      savedGameState?.savedQuestions?.length > 0 &&
+      savedGameState.savedQuestions
+    ) {
+      setQuestions(savedGameState.savedQuestions);
+      setCurrentQuestionIndex(savedGameState.currentQuestionIndex || 0);
+      setScore(savedGameState.currentScore || 0);
+      setTimeLeft(duration);
+    } else {
+      loadNewQuestions();
+    }
+  }, [queryParams, duration, matchType, loadNewQuestions]);
 
   useEffect(() => {
     if (questions.length > 0) {
       saveGameState(questions, currentQuestionIndex, score, matchType);
     }
-  }, [questions, currentQuestionIndex, score]);
+  }, [questions, currentQuestionIndex, score, matchType]);
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -111,23 +123,21 @@ export default function CustomGamePage() {
   };
 
   const handleAnswer = (isCorrect) => {
-    // Base score and penalty per second
     const baseScore = 200000;
     const penaltyPerSecond = 10000;
 
-    // Calculate time-based score
     const timeScore = isCorrect
       ? Math.max(
           baseScore - Math.floor((duration - timeLeft) * penaltyPerSecond),
           0
         )
       : 0;
-    let updatedScore = score + timeScore; // Add time-based score if the answer is correct
+    let updatedScore = score + timeScore;
     setScore(updatedScore);
 
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setTimeLeft(duration); // Reset timer for the next question
+      setTimeLeft(duration);
     } else {
       if (checkIfBestScore(updatedScore)) setHasBeatenHighScore(true);
       setIsScoreModalOpen(true);
@@ -159,14 +169,14 @@ export default function CustomGamePage() {
 
   return (
     <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
-      <div className="main_modal-custommatch-banner absolute z-50 top-0 p-4 bg-black flex items-center space-x-5 w-full">
+      <div className="main_modal-quickmatch-banner absolute z-50 top-0 p-4 bg-black flex items-center space-x-5 w-full">
         <div>
           <button
             id="btn_highScores-gameMenu"
-            className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[215px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
+            className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[190px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
             onClick={() => setShowHighScores(!showHighScores)} // Alterne l'état d'ouverture
           >
-            <p className="text-[#FEFFB2] pl-5 text-[16px] tracking-wider">
+            <p className="text-[#FEFFB2] pl-3 text-[16px] tracking-wider">
               SCORES
             </p>
             <p
