@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { loadGameState } from "../utilities/fetch";
-import HighScoreModal from "../utilities/HighScoreModal";
+import HighScoreModal from "../utilities/highScoreModal";
 
 export default function GameMenu() {
   const router = useRouter();

@@ -11,7 +11,7 @@ import { saveScore, getScores } from "../utilities/scores";
 import RotatingScores from "../utilities/RotatingScores";
 import ScoreModal from "../utilities/ScoreModal";
 import PieTimer from "../utilities/pieTimer";
-import HighScoreModal from "../utilities/HighScoreModal";
+import HighScoreModal from "../utilities/highScoreModal";
 
 function decodeHtmlEntities(text) {
   const textArea = document.createElement("textarea");

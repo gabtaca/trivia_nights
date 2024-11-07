@@ -7,7 +7,7 @@ import categories from "../json/categories.json";
 import difficulties from "../json/difficulties.json";
 import types from "../json/types.json";
 import amounts from "../json/amount.json";
-import HighScoreModal from "../utilities/HighScoreModal";
+import HighScoreModal from "../utilities/highScoreModal";
 import RotatingScores from "../utilities/RotatingScores";
 import {
   QuestionAmountDropdown,
