@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback,Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   fetchQuestionsCMatch,
@@ -19,9 +19,23 @@ function decodeHtmlEntities(text) {
   return textArea.value;
 }
 
+function QueryParamsComponent({ setQueryParams }) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    setQueryParams({
+      amount: searchParams.get("amount"),
+      category: searchParams.get("category"),
+      difficulty: searchParams.get("difficulty"),
+      type: searchParams.get("type"),
+    });
+  }, [searchParams, setQueryParams]);
+
+  return null;
+}
+
 export default function CustomGamePage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [queryParams, setQueryParams] = useState({
     amount: null,
@@ -29,7 +43,6 @@ export default function CustomGamePage() {
     difficulty: null,
     type: null,
   });
-
   const [showHighScores, setShowHighScores] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -44,16 +57,6 @@ export default function CustomGamePage() {
   const goToMenu = () => {
     router.push("/gameMenu");
   };
-
-  // Retrieve query parameters from searchParams and store them in state
-  useEffect(() => {
-    setQueryParams({
-      amount: searchParams.get("amount"),
-      category: searchParams.get("category"),
-      difficulty: searchParams.get("difficulty"),
-      type: searchParams.get("type"),
-    });
-  }, [searchParams]);
 
   const loadNewQuestions = useCallback(async () => {
     const hasValidQueryParams =
@@ -169,20 +172,23 @@ export default function CustomGamePage() {
 
   return (
     <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
-      <div className="main_modal-quickmatch-banner absolute z-50 top-0 p-4 bg-black flex items-center space-x-5 w-full">
+      <Suspense fallback={<div>Loading...</div>}>
+        <QueryParamsComponent setQueryParams={setQueryParams} />
+      </Suspense>
+      <div className="main_modal-custommatch-banner absolute z-50 top-0 p-4 bg-black flex items-center space-x-5 w-full">
         <div>
           <button
             id="btn_highScores-gameMenu"
-            className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[190px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
-            onClick={() => setShowHighScores(!showHighScores)} // Alterne l'état d'ouverture
+            className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[215px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
+            onClick={() => setShowHighScores(!showHighScores)}
           >
-            <p className="text-[#FEFFB2] pl-3 text-[16px] tracking-wider">
+            <p className="text-[#FEFFB2] pl-5 text-[16px] tracking-wider">
               SCORES
             </p>
             <p
               className={`text-lg text-[#FEFFB2] items-baseline ${
                 showHighScores ? "-rotate-90" : "rotate-90"
-              } transition-transform duration-200`} // Ajoute une transition fluide
+              } transition-transform duration-200`}
             >
               &gt;
             </p>
