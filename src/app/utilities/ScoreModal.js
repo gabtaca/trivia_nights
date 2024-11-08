@@ -87,7 +87,7 @@ export default function ScoreModal({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex flex-col gap-20 items-center justify-center bg-black bg-opacity-50">
       {isBestScore && (
         <canvas
           id="fireworkCanvas"
@@ -98,7 +98,7 @@ export default function ScoreModal({
       )}
 
       <div
-        className={`bg-[#2B0C39] bg-opacity-55 flex-col gap-5 flex items-center justify-center px-5 z-30 p-5 rounded-lg w-[300px] text-center relative ${
+        className={`bg-[#2B0C39] bg-opacity-55 flex-col gap-5 flex items-center justify-center px-5 z-30 p-5 rounded-3xl w-[300px] text-center relative ${
           error ? "animate-shake" : ""
         }`}
         style={{ animation: error ? "shake 0.3s ease" : "" }}
@@ -118,17 +118,19 @@ export default function ScoreModal({
           placeholder="Entrez votre nom"
           value={playerName}
           onChange={handleInputChange}
-          className="border rounded p-2 w-full mb-2"
+          className="border rounded-3xl text-center p-2 w-full mb-2"
         />
         {error && (
           <p className="text-red-500 text-sm mb-2">Veuillez entrer votre nom</p>
         )}
 
-        <div className="flex space-x-4">
+
+      </div>
+      <div className="flex flex-col items-center gap-5 w-[70%]">
           <button
             onClick={handleReplay}
             disabled={disableButtons}
-            className={`font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[100px] px-[20px] py-[12px] items-center ${
+            className={`font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] w-[200px] md:max-w-[400px] rounded-[17px] bg-[#FF38D3] border-[#430086]  px-[20px] py-[12px] items-center ${
               disableButtons ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
@@ -137,14 +139,13 @@ export default function ScoreModal({
           <button
             onClick={handleReturnToMenu}
             disabled={disableButtons}
-            className={`font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[100px] px-[20px] py-[12px] items-center ${
+            className={`font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] w-[200px] md:max-w-[400px] rounded-[17px] bg-[#FF38D3] border-[#430086]  px-[20px] py-[12px] items-center ${
               disableButtons ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
             RETOUR AU MENU
           </button>
         </div>
-      </div>
     </div>
   );
 }

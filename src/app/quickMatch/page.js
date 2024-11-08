@@ -1,18 +1,16 @@
 "use client";
+
+// Importation des hooks et fonctions nécessaires
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import {
-  fetchQuestionsQMatch,
-  saveGameState,
-  loadGameState,
-  clearGameState,
-} from "../utilities/fetch";
+import { fetchQuestionsQMatch, saveGameState, loadGameState } from "../utilities/fetch";
 import { saveScore, getScores } from "../utilities/scores";
 import RotatingScores from "../utilities/RotatingScores";
 import ScoreModal from "../utilities/ScoreModal";
 import PieTimer from "../utilities/pieTimer";
 import HighScoreModal from "../utilities/highScoreModal";
 
+// Décodage des entités HTML
 function decodeHtmlEntities(text) {
   const textArea = document.createElement("textarea");
   textArea.innerHTML = text;
@@ -36,6 +34,7 @@ export default function QuickMatchPage() {
     router.push("/gameMenu");
   };
 
+  // Charger les questions et les scores lors du premier rendu
   useEffect(() => {
     const savedGameState = loadGameState(matchType);
     if (savedGameState?.savedQuestions?.length > 0) {
@@ -47,9 +46,7 @@ export default function QuickMatchPage() {
       loadNewQuestions();
     }
 
-    const scores = getScores(matchType)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5);
+    const scores = getScores(matchType).sort((a, b) => b.score - a.score).slice(0, 5);
     setTopScores(scores);
   }, []);
 
@@ -71,14 +68,19 @@ export default function QuickMatchPage() {
     }
   }, [questions, currentQuestionIndex, score]);
 
+  // Surveiller les changements de score pour vérifier le meilleur score
+  useEffect(() => {
+    const currentHighScore = Math.max(...topScores.map((s) => s.score), 0);
+    if (score > currentHighScore) {
+      setHasBeatenHighScore(true);
+    }
+  }, [score, topScores]);
+
   const currentQuestion = questions[currentQuestionIndex];
 
   const answers = useMemo(() => {
     if (currentQuestion) {
-      return [
-        ...currentQuestion.incorrect_answers,
-        currentQuestion.correct_answer,
-      ]
+      return [...currentQuestion.incorrect_answers, currentQuestion.correct_answer]
         .map(decodeHtmlEntities)
         .sort(() => Math.random() - 0.5);
     }
@@ -92,10 +94,7 @@ export default function QuickMatchPage() {
   const calculateScore = (timeLeft) => {
     const baseScore = 200000;
     const penaltyPerSecond = 10000;
-    return Math.max(
-      baseScore - Math.floor((duration - timeLeft) * penaltyPerSecond),
-      0
-    );
+    return Math.max(baseScore - Math.floor((duration - timeLeft) * penaltyPerSecond), 0);
   };
 
   const handleAnswer = (isCorrect) => {
@@ -108,18 +107,9 @@ export default function QuickMatchPage() {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setTimeLeft(duration);
     } else {
-      if (checkIfBestScore(updatedScore)) setHasBeatenHighScore(true);
       setIsScoreModalOpen(true);
     }
   };
-
-  function checkIfBestScore(currentScore) {
-    const scores = getScores(matchType);
-    const highestScore = scores.length
-      ? Math.max(...scores.map((s) => s.score))
-      : 0;
-    return currentScore > highestScore;
-  }
 
   const handleTimeChange = (newTimeLeft) => {
     setTimeLeft(newTimeLeft);
@@ -132,32 +122,20 @@ export default function QuickMatchPage() {
           <button
             id="btn_highScores-gameMenu"
             className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[190px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
-            onClick={() => setShowHighScores(!showHighScores)} // Alterne l'état d'ouverture
+            onClick={() => setShowHighScores(!showHighScores)}
           >
-            <p className="text-[#FEFFB2] pl-3 text-[16px] tracking-wider">
-              SCORES
-            </p>
-            <p
-              className={`text-lg text-[#FEFFB2] items-baseline ${
-                showHighScores ? "-rotate-90" : "rotate-90"
-              } transition-transform duration-200`} // Ajoute une transition fluide
-            >
+            <p className="text-[#FEFFB2] pl-3 text-[16px] tracking-wider">SCORES</p>
+            <p className={`text-lg text-[#FEFFB2] items-baseline ${showHighScores ? "-rotate-90" : "rotate-90"} transition-transform duration-200`}>
               &gt;
             </p>
           </button>
 
-          {showHighScores && (
-            <HighScoreModal onClose={() => setShowHighScores(false)} />
-          )}
+          {showHighScores && <HighScoreModal onClose={() => setShowHighScores(false)} />}
         </div>
         <RotatingScores topScores={topScores} />
       </div>
 
-      <main
-        className={`flex flex-col justify-center items-center w-full h-full ${
-          isScoreModalOpen ? "hidden" : ""
-        }`}
-      >
+      <main className={`flex flex-col justify-center items-center w-full h-full ${isScoreModalOpen ? "hidden" : ""}`}>
         <div className="w-full h-[15%]"></div>
         <div className="main_modal-quickmatch top-0 z-10 flex flex-col gap-10 justify-center items-center w-[90%] h-[90%] relative">
           {hasBeatenHighScore && (
@@ -165,7 +143,7 @@ export default function QuickMatchPage() {
               Nouveau Meilleur Score!
             </div>
           )}
-          <div className="myscore_container text-[#61FF64] font-sixtyFour text-[30px]">
+          <div className="myscore_container text-[#61FF64] font-sixtyFour text-[16px]">
             <h2>Score: {score}</h2>
           </div>
 
@@ -173,34 +151,19 @@ export default function QuickMatchPage() {
             <div className="question_container bg-[#2B0C39] bg-opacity-65 border-r-[#FF38D4] shadow-[3px_4px_0px_0px_rgba(255,57,212)] w-full h-full flex flex-col gap-5 items-center text-center p-10 justify-between rounded-3xl">
               <div className="question_header opacity-100 flex flex-row text-center self-center font-tiltNeon text-[30px] w-full justify-center m-0">
                 <h2 className="flex font-bold text-shadow-neon-pink text-stroke-pink absolute">
-                  {currentQuestion.type === "multiple"
-                    ? "Choix Multiple"
-                    : currentQuestion.type === "boolean"
-                    ? "Vrai ou Faux"
-                    : currentQuestion.type}
+                  {currentQuestion.type === "multiple" ? "Choix Multiple" : currentQuestion.type === "boolean" ? "Vrai ou Faux" : currentQuestion.type}
                 </h2>
                 <h2 className="text-white font-bold absolute">
-                  {currentQuestion.type === "multiple"
-                    ? "Choix Multiple"
-                    : currentQuestion.type === "boolean"
-                    ? "Vrai ou Faux"
-                    : currentQuestion.type}
+                  {currentQuestion.type === "multiple" ? "Choix Multiple" : currentQuestion.type === "boolean" ? "Vrai ou Faux" : currentQuestion.type}
                 </h2>
                 <div className="w-full flex flex-row justify-between">
                   <div className="w-[40px] h-[40px]"></div>
                   <div className="timer_container relative justify-end w-[40px] h-[40px]">
-                    <PieTimer
-                      key={currentQuestionIndex}
-                      duration={duration}
-                      onTimeUp={handleTimeUp}
-                      onTimeChange={handleTimeChange}
-                    />
+                    <PieTimer key={currentQuestionIndex} duration={duration} onTimeUp={handleTimeUp} onTimeChange={handleTimeChange} />
                   </div>
                 </div>
               </div>
-              <h3 className="text-white font-montserrat font-semibold text-[16px]">
-                {decodeHtmlEntities(currentQuestion.question)}
-              </h3>
+              <h3 className="text-white font-montserrat font-semibold text-[16px]">{decodeHtmlEntities(currentQuestion.question)}</h3>
               <div className="w-full flex flex-row justify-end">
                 <div className="question-progress flex text-white font-bold">
                   {currentQuestionIndex + 1}/{questions.length}
@@ -214,10 +177,8 @@ export default function QuickMatchPage() {
               <button
                 key={index}
                 id="btn_reponse"
-                className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center"
-                onClick={() =>
-                  handleAnswer(answer === currentQuestion.correct_answer)
-                }
+                className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[300px] md:w-[80vw] px-[20px] py-[12px] items-center"
+                onClick={() => handleAnswer(answer === currentQuestion.correct_answer)}
               >
                 {answer}
               </button>
@@ -225,26 +186,15 @@ export default function QuickMatchPage() {
           </nav>
         </div>
         <div className="w-full">
-          <button
-            onClick={goToMenu}
-            className="btn_homeLogo-customMatch flex flex-col cursor-pointer pt-5 pb-3 w-full"
-          >
+          <button onClick={goToMenu} className="btn_homeLogo-customMatch flex flex-col cursor-pointer pt-5 pb-3 w-full">
             <div className="flex flex-col cursor-pointer pl-10">
               <div className="ctrl_logo_h1 flex blur-[0.5px]">
-                <h1 className="font-tiltNeon text-[40px] text-shadow-neon-pink text-stroke-pink text-pink-100">
-                  TRIVIA
-                </h1>
-                <h1 className="font-tiltNeon text-[40px] absolute text-pink-100">
-                  TRIVIA
-                </h1>
+                <h1 className="font-tiltNeon text-[40px] text-shadow-neon-pink text-stroke-pink text-pink-100">TRIVIA</h1>
+                <h1 className="font-tiltNeon text-[40px] absolute text-pink-100">TRIVIA</h1>
               </div>
               <div className="ctrl_logo_h2 flex w-full justify-end mt-[-10px] ml-[20px] blur-[0.5px]">
-                <h2 className="font-girlNextDoor font-thin text-[25px] text-shadow-neon-purple text-stroke-purple text-pink-100">
-                  NIGHTS
-                </h2>
-                <h2 className="font-girlNextDoor font-thin text-[25px] absolute text-pink-100">
-                  NIGHTS
-                </h2>
+                <h2 className="font-girlNextDoor font-thin text-[25px] text-shadow-neon-purple text-stroke-purple text-pink-100">NIGHTS</h2>
+                <h2 className="font-girlNextDoor font-thin text-[25px] absolute text-pink-100">NIGHTS</h2>
               </div>
             </div>
           </button>

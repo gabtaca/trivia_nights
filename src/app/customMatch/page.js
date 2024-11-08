@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { loadGameState } from "../utilities/fetch";
+import {
+  fetchQuestionsCMatch,
+  loadGameState,
+  saveGameState,
+} from "../utilities/fetch";
 import categories from "../json/categories.json";
 import difficulties from "../json/difficulties.json";
 import types from "../json/types.json";
@@ -15,6 +19,7 @@ import {
   DifficultyDropdown,
   TypeDropdown,
 } from "../utilities/customDropdown";
+import { getScores } from "../utilities/scores";
 
 export default function CustomMatch() {
   const router = useRouter();
@@ -22,65 +27,80 @@ export default function CustomMatch() {
   const [selectedCategory, setSelectedCategory] = useState("null");
   const [selectedDifficulty, setSelectedDifficulty] = useState("null");
   const [selectedType, setSelectedType] = useState("null");
-  const [error, setError] = useState(false); // Gestion de l'erreur
-  const [showHighScores, setShowHighScores] = useState(false);
+  const [error, setError] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   const [topScores, setTopScores] = useState([]);
+  const [showHighScores, setShowHighScores] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
 
   const goToMenu = () => {
     router.push("/gameMenu");
   };
 
-  const startGame = () => {
-    if (
-      selectedAmount === "null" ||
-      selectedCategory === "null" ||
-      selectedDifficulty === "null" ||
-      selectedType === "null"
-    ) {
-      setError(true);
-    } else {
-      const savedGameState = loadGameState("customMatch");
-      if (
-        savedGameState.savedQuestions &&
-        savedGameState.savedQuestions.length > 0
-      ) {
-        const confirmNewGame = window.confirm(
-          "Vous avez une partie en cours. Démarrer une nouvelle partie effacera votre progression actuelle. Voulez-vous continuer ?"
-        );
-        if (!confirmNewGame) {
-          return; // Annuler le démarrage de la nouvelle partie
-        }
-      }
-      setError(false);
-      const queryParams = `?amount=${selectedAmount}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
-      router.push(`/customMatch/customGamePage${queryParams}`);
-    }
-  };
-
   useEffect(() => {
-    const savedScores = JSON.parse(localStorage.getItem("customMatch")) || [];
-    setTopScores(savedScores.slice(0, 5)); // Charger le top 5 des scores
+    const scores = getScores("customMatch")
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+    setTopScores(scores);
   }, []);
 
-  useEffect(() => {
-    if (
+  // Fonction de validation des sélections
+  const validateSelections = () => {
+    return (
       selectedAmount !== "null" &&
       selectedCategory !== "null" &&
       selectedDifficulty !== "null" &&
       selectedType !== "null"
-    ) {
-      setError(false); // Supprime l'erreur si toutes les options sont sélectionnées
+    );
+  };
+
+  useEffect(() => {
+    if (validateSelections()) {
+      setButtonDisabled(false); // Réactiver le bouton si toutes les sélections sont valides
     }
   }, [selectedAmount, selectedCategory, selectedDifficulty, selectedType]);
 
+  const startGame = async () => {
+    if (!validateSelections()) {
+      setError(true); // Active immédiatement l'animation de secousse
+      setButtonDisabled(true); // Désactiver le bouton
+  
+      // Change l'animationKey après l'erreur pour forcer le re-render
+      setAnimationKey((prevKey) => prevKey + 1);
+  
+      // Arrête l'animation après un délai pour que `error` soit remis à false
+      setTimeout(() => setError(false), 600);
+      return;
+    }
+  
+    // Démarre le jeu si toutes les sélections sont valides
+    try {
+      const result = await fetchQuestionsCMatch(
+        selectedAmount,
+        selectedCategory,
+        selectedDifficulty,
+        selectedType
+      );
+      if (result.questions.length === 0) {
+        alert("Aucune question disponible pour les paramètres sélectionnés.");
+        return;
+      }
+  
+      const queryParams = `?amount=${selectedAmount}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
+      router.replace(`../customMatch/customGamePage${queryParams}`);
+    } catch (error) {
+      console.error("Erreur lors du démarrage de la partie :", error);
+    }
+  };
+
   return (
     <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh] overflow-hidden">
-      <div className="main_modal-quickmatch-banner absolute z-50 top-0 p-4 bg-black flex items-center space-x-5 w-full">
+      <div className="main_modal-custommatch-banner absolute z-50 top-0 p-4 bg-black flex items-center space-x-5 w-full">
         <div>
           <button
             id="btn_highScores-gameMenu"
             className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[190px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
-            onClick={() => setShowHighScores(!showHighScores)} // Alterne l'état d'ouverture
+            onClick={() => setShowHighScores(!showHighScores)}
           >
             <p className="text-[#FEFFB2] pl-3 text-[16px] tracking-wider">
               SCORES
@@ -88,12 +108,11 @@ export default function CustomMatch() {
             <p
               className={`text-lg text-[#FEFFB2] items-baseline ${
                 showHighScores ? "-rotate-90" : "rotate-90"
-              } transition-transform duration-200`} // Ajoute une transition fluide
+              } transition-transform duration-200`}
             >
               &gt;
             </p>
           </button>
-
           {showHighScores && (
             <HighScoreModal onClose={() => setShowHighScores(false)} />
           )}
@@ -107,10 +126,10 @@ export default function CustomMatch() {
 
       <main className="flex flex-col z-20 justify-evenly items-center h-full w-full">
         <div
+          key={animationKey} // Utilisation de la clé pour rejouer l’animation
           className={`customSettings_container rounded-3xl bg-[#2b0c39] bg-opacity-60 shadow-[3px_4px_0px_0px_rgba(255,57,212)] ${
             error ? "animate-shake" : ""
           }`}
-          style={{ animation: error ? "shake 0.3s ease" : "" }}
         >
           <div className="ctrl_customMatch-title flex p-10 justify-center">
             <h1 className="font-tiltNeon text-[35px] relative text-shadow-neon-pink text-stroke-pink text-pink-100">
@@ -120,11 +139,6 @@ export default function CustomMatch() {
               Partie personnalisée
             </h1>
           </div>
-          {error && (
-            <p className="text-red-500 text-lg mb-2 text-center">
-              Veuillez sélectionner toutes les options
-            </p>
-          )}
           <nav className="flex flex-col justify-center relative text-center items-center p-10 gap-10">
             <QuestionAmountDropdown
               selectedAmount={selectedAmount}
@@ -167,10 +181,10 @@ export default function CustomMatch() {
         <nav>
           <button
             onClick={startGame}
-            disabled={error} // Désactiver le bouton uniquement si une erreur est présente
+            disabled={buttonDisabled} // Désactiver le bouton uniquement si une erreur est détectée après clic
             className={`font-montserrat z-100 font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] w-[250px] px-[20px] py-[15px] ${
-              error
-                ? "opacity-50 cursor-not-allowed border-red-500"
+              buttonDisabled
+                ? "opacity-50 cursor-not-allowed border-gray-500"
                 : "border-[#430086]"
             } bg-[#FF38D3]`}
           >

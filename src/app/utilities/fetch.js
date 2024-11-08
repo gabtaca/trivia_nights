@@ -138,19 +138,23 @@ async function fetchAllQuestions(amount, category, difficulty, type, matchType) 
 
 // Fonction pour récupérer les questions en mode Custom Match
 export async function fetchQuestionsCMatch(amount, category, difficulty, type) {
+  console.log("fetchQuestionsCMatch appelé avec les paramètres :", { amount, category, difficulty, type });
   const savedGameState = loadGameState("customMatch");
+  console.log("État du jeu chargé :", savedGameState);
 
   if (Array.isArray(savedGameState.savedQuestions) && savedGameState.savedQuestions.length > 0) {
+    console.log("Questions sauvegardées trouvées, retourner les questions sauvegardées");
     return {
       questions: savedGameState.savedQuestions,
       currentQuestionIndex: savedGameState.currentQuestionIndex,
     };
   }
 
-  // Si aucune question sauvegardée, faire un fetch
   try {
+    console.log("Aucune question sauvegardée, faire un fetch");
     const result = await fetchAllQuestions(amount, category, difficulty, type, "customMatch");
-    saveGameState(result.questions, 0, 0, "customMatch");
+    console.log("Résultat du fetch :", result);
+    saveGameState(result.questions, 0, 0, "customMatch"); // Sauvegarder les questions et l'état du jeu
     return result;
   } catch (error) {
     console.error("Erreur de chargement des questions en mode Custom Match:", error);

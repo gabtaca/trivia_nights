@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo, useCallback,Suspense } from "react";
+import { useEffect, useState, useMemo, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   fetchQuestionsCMatch,
@@ -36,7 +36,6 @@ function QueryParamsComponent({ setQueryParams }) {
 
 export default function CustomGamePage() {
   const router = useRouter();
-
   const [queryParams, setQueryParams] = useState({
     amount: null,
     category: null,
@@ -57,6 +56,22 @@ export default function CustomGamePage() {
   const goToMenu = () => {
     router.push("/gameMenu");
   };
+
+  useEffect(() => {
+    // Charger les meilleurs scores pour customMatch depuis le localStorage
+    const scores = getScores(matchType)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+    setTopScores(scores);
+  }, []);
+
+  // Surveiller les changements de score pour détecter si le meilleur score est battu
+  useEffect(() => {
+    const currentHighScore = Math.max(...topScores.map((s) => s.score), 0);
+    if (score > currentHighScore) {
+      setHasBeatenHighScore(true);
+    }
+  }, [score, topScores]);
 
   const loadNewQuestions = useCallback(async () => {
     const hasValidQueryParams =
@@ -179,24 +194,17 @@ export default function CustomGamePage() {
         <div>
           <button
             id="btn_highScores-gameMenu"
-            className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[215px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
+            className="flex flex-row justify-between items-center text-center bg-black font-sixtyFour font-scan-0 text-[#FEFFB2] w-[190px] px-[20px] py-[7px] rounded-lg border-[#FEFFB2] border-[1.5px] shadow-[5px_5px_0px_0px_#FEFFB2]"
             onClick={() => setShowHighScores(!showHighScores)}
           >
-            <p className="text-[#FEFFB2] pl-5 text-[16px] tracking-wider">
+            <p className="text-[#FEFFB2] pl-3 text-[16px] tracking-wider">
               SCORES
             </p>
-            <p
-              className={`text-lg text-[#FEFFB2] items-baseline ${
-                showHighScores ? "-rotate-90" : "rotate-90"
-              } transition-transform duration-200`}
-            >
+            <p className={`text-lg text-[#FEFFB2] items-baseline ${showHighScores ? "-rotate-90" : "rotate-90"} transition-transform duration-200`}>
               &gt;
             </p>
           </button>
-
-          {showHighScores && (
-            <HighScoreModal onClose={() => setShowHighScores(false)} />
-          )}
+          {showHighScores && <HighScoreModal onClose={() => setShowHighScores(false)} />}
         </div>
         <RotatingScores topScores={topScores} />
       </div>
@@ -261,7 +269,7 @@ export default function CustomGamePage() {
               <button
                 key={index}
                 id="btn_reponse"
-                className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[200px] px-[20px] py-[12px] items-center"
+                className="font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] border-[#FF38D3] bg-[#430086] w-[300px] md:w-[80vw] px-[20px] py-[12px] items-center"
                 onClick={() =>
                   handleAnswer(answer === currentQuestion.correct_answer)
                 }
