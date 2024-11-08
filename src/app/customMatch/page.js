@@ -120,8 +120,10 @@ export default function CustomMatch() {
         <RotatingScores topScores={topScores} />
       </div>
 
-      <div className="bg_gradient-top z-0 absolute w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent max-h-[100vh]"></div>
-      <div className="bg_gradient-bot z-0 absolute bottom-0 w-full h-[20%] bg-gradient-to-t from-slate-900 to-transparent"></div>
+      <div className="flex flex-col justify-between z-0 h absolute h-full w-full">
+        <div className="bg_gradient-top  w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
+        <div className="bg_gradient-bot  w-full h-[20%] bg-gradient-to-t from-slate-900 to-transparent"></div>
+      </div>
       <div className="h_boost-div w-full h-[5%]"></div>
 
       <main className="flex flex-col z-20 justify-evenly items-center h-full w-full">

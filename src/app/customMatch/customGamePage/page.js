@@ -208,24 +208,28 @@ export default function CustomGamePage() {
         </div>
         <RotatingScores topScores={topScores} />
       </div>
+      <div className="flex flex-col justify-between z-0 h absolute h-full w-full">
+        <div className="bg_gradient-top  w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
+        <div className="bg_gradient-bot  w-full h-[20%] bg-gradient-to-t from-slate-900 to-transparent"></div>
+      </div>
       <main
-        className={`flex flex-col justify-center items-center w-full h-full ${
+        className={`flex flex-col z-30 justify-center items-center w-full h-full ${
           isScoreModalOpen ? "hidden" : ""
         }`}
       >
         <div className="w-full h-[15%]"></div>
-        <div className="main_modal-custommatch top-0 z-10 flex flex-col gap-10 justify-center items-center w-[90%] h-[90%]">
+        <div className="main_modal-custommatch top-30 z-10 flex flex-col gap-10 justify-center items-center w-[90%] h-[90%]">
           {hasBeatenHighScore && (
             <div className="text-yellow-400 font-bold text-lg animate-bounce">
               Nouveau Meilleur Score!
             </div>
           )}
-          <div className="myscore_container text-[#61FF64] font-sixtyFour text-[16px]">
+          <div className="myscore_container z-30 text-[#61FF64] font-sixtyFour text-[16px]">
             <h2>Score: {score}</h2>
           </div>
 
           {currentQuestion && (
-            <div className="question_container bg-[#2B0C39] bg-opacity-65 border-r-[#FF38D4] shadow-[3px_4px_0px_0px_rgba(255,57,212)] w-full h-full flex flex-col gap-5 items-center text-center p-10 justify-between rounded-3xl">
+            <div className="question_container z-30 bg-[#2B0C39] bg-opacity-65 border-r-[#FF38D4] shadow-[3px_4px_0px_0px_rgba(255,57,212)] w-full h-full flex flex-col gap-5 items-center text-center p-10 justify-between rounded-3xl">
               <div className="question_header opacity-100 flex flex-row text-center self-center font-tiltNeon text-[30px] w-full justify-center m-0">
                 <h2 className="flex font-bold text-shadow-neon-pink text-stroke-pink absolute">
                   {currentQuestion.type === "multiple"
@@ -302,7 +306,7 @@ export default function CustomGamePage() {
               </h2>
             </div>
           </div>
-          <span className="info_backToMenu hidden group-hover:flex font-tiltNeon text-shadow-scintillant text-lg text-white">
+          <span className="info_backToMenu hidden z-30 group-hover:flex font-tiltNeon text-shadow-scintillant text-lg text-white">
             Retour au Menu Principal
           </span>
         </button>

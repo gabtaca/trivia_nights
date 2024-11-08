@@ -24,7 +24,7 @@ module.exports = {
         'brick-background': "url('/brick_wall.png')",
       },
       boxShadow: {
-        'box-neon-pink': '0 4px 30px rgba(255, 0, 255, 0.7), 0 0 60px rgba(255, 57, 212, 0.7)', 
+        'box-neon-pink': '0 4px 10px rgba(255, 0, 255, 0.7), 0 0 60px rgba(255, 57, 212, 0.7)', 
         'scintillant': '0 0 10px rgba(255, 255, 200, 0.5), 0 0 20px rgba(255, 255, 200, 0.4)',
       },
       dropShadow: {
@@ -39,7 +39,7 @@ module.exports = {
     plugin(function ({ addUtilities }) {
       addUtilities({
         '.text-shadow-neon-pink': {
-          textShadow: '0 0 30px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 57, 212, 0.9)',
+          textShadow: '0 0 10px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 57, 212, 0.9)',
         },
         '.text-shadow-scintillant': {
           textShadow: '0 0 10px rgba(255, 255, 200, 1), 0 0 20px rgba(255, 255, 200, 0.7)',
@@ -77,7 +77,7 @@ module.exports = {
         '.outline-scintillant': {
           outline: '25px dotted rgba(255, 255, 200, 0.8)',
           'outline-offset': '0px',
-          'border-radius': '50px',
+          'border-radius': '20px',
           'box-shadow': '0 0 10px rgba(255, 255, 200, 0.5), 0 0 20px rgba(255, 255, 200, 0.4)',
           animation: 'twinkle 2s infinite alternate',
         },

@@ -43,8 +43,10 @@ export default function GameMenu() {
 
   return (
     <div className="z-0 bg-brick-background bg-repeat bg-contain bg-[#31325D] w-full h-[100vh]">
-      <div className="bg_gradient-top z-0 absolute top-0 w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
-      <div className="bg_gradient-bot z-0 absolute bottom-0 w-full h-[20%] bg-gradient-to-t from-slate-900 to-transparent"></div>
+      <div className="flex flex-col justify-between z-0 h absolute h-full w-full">
+        <div className="bg_gradient-top  w-full h-[20%] bg-gradient-to-b from-slate-900 to-transparent"></div>
+        <div className="bg_gradient-bot  w-full h-[20%] bg-gradient-to-t from-slate-900 to-transparent"></div>
+      </div>
       <main className="flex flex-col justify-center items-center w-full h-full">
         <div className="main_modal-gameMenu z-10 flex flex-col gap-10 justify-evenly items-center w-[90%] h-[90%]">
           <div className="logo">
