@@ -39,16 +39,16 @@ module.exports = {
     plugin(function ({ addUtilities }) {
       addUtilities({
         '.text-shadow-neon-pink': {
-          textShadow: '0 0 10px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 57, 212, 0.9)',
+          textShadow: '0 0 10px rgba(255, 0, 255, 0.8), 0 0 10px rgba(255, 57, 212, 0.9)',
         },
         '.text-shadow-scintillant': {
-          textShadow: '0 0 10px rgba(255, 255, 200, 1), 0 0 20px rgba(255, 255, 200, 0.7)',
+          textShadow: '0 0 10px rgba(255, 255, 200, 1), 0 0 10px rgba(255, 255, 200, 0.7)',
         },
         '.text-stroke-pink': {
           '-webkit-text-stroke': '6px rgba(255, 57, 212, 1)',
         },
         '.text-shadow-neon-purple': {
-          textShadow: '0 0 10px rgba(67, 0, 134, 0.8), 0 0 20px rgba(67, 0, 134, 0.6), 0 0 30px rgba(67, 0, 134, 0.5)',
+          textShadow: '0 0 10px rgba(67, 0, 134, 0.8), 0 0 10px rgba(67, 0, 134, 0.6), 0 0 10px rgba(67, 0, 134, 0.5)',
         },
         '.text-stroke-purple': {
           '-webkit-text-stroke': '2px rgba(67, 0, 134, 1)', 
