@@ -64,15 +64,15 @@ export default function CustomMatch() {
     if (!validateSelections()) {
       setError(true); // Active immédiatement l'animation de secousse
       setButtonDisabled(true); // Désactiver le bouton
-  
+
       // Change l'animationKey après l'erreur pour forcer le re-render
       setAnimationKey((prevKey) => prevKey + 1);
-  
+
       // Arrête l'animation après un délai pour que `error` soit remis à false
       setTimeout(() => setError(false), 600);
       return;
     }
-  
+
     // Démarre le jeu si toutes les sélections sont valides
     try {
       const result = await fetchQuestionsCMatch(
@@ -85,7 +85,7 @@ export default function CustomMatch() {
         alert("Aucune question disponible pour les paramètres sélectionnés.");
         return;
       }
-  
+
       const queryParams = `?amount=${selectedAmount}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
       router.replace(`../customMatch/customGamePage${queryParams}`);
     } catch (error) {
@@ -178,11 +178,11 @@ export default function CustomMatch() {
           </nav>
         </div>
 
-        <nav>
+        <nav className="z-30">
           <button
             onClick={startGame}
             disabled={buttonDisabled} // Désactiver le bouton uniquement si une erreur est détectée après clic
-            className={`font-montserrat z-100 font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] w-[250px] px-[20px] py-[15px] ${
+            className={`font-montserrat font-bold text-white text-[12px] text-center border-[3.2px] rounded-[17px] w-[250px] px-[20px] py-[15px] ${
               buttonDisabled
                 ? "opacity-50 cursor-not-allowed border-gray-500"
                 : "border-[#430086]"
@@ -194,7 +194,7 @@ export default function CustomMatch() {
 
         <button
           onClick={goToMenu}
-          className="btn_homeLogo-customMatch flex flex-col cursor-pointer w-full"
+          className="btn_homeLogo-customMatch group z-30 flex flex-row items-center gap-12 cursor-pointer w-full"
         >
           <div className="flex flex-col cursor-pointer pl-10">
             <div className="ctrl_logo_h1 flex blur-[0.5px]">
@@ -214,6 +214,9 @@ export default function CustomMatch() {
               </h2>
             </div>
           </div>
+          <span className="info_backToMenu hidden group-hover:flex font-tiltNeon text-shadow-scintillant text-lg text-white">
+            Retour au Menu Principal
+          </span>
         </button>
       </main>
     </div>

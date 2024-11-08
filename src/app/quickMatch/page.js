@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 // Importation des hooks et fonctions nécessaires
 import { useEffect, useState, useMemo } from "react";
@@ -186,18 +186,32 @@ export default function QuickMatchPage() {
           </nav>
         </div>
         <div className="w-full">
-          <button onClick={goToMenu} className="btn_homeLogo-customMatch flex flex-col cursor-pointer pt-5 pb-3 w-full">
-            <div className="flex flex-col cursor-pointer pl-10">
-              <div className="ctrl_logo_h1 flex blur-[0.5px]">
-                <h1 className="font-tiltNeon text-[40px] text-shadow-neon-pink text-stroke-pink text-pink-100">TRIVIA</h1>
-                <h1 className="font-tiltNeon text-[40px] absolute text-pink-100">TRIVIA</h1>
-              </div>
-              <div className="ctrl_logo_h2 flex w-full justify-end mt-[-10px] ml-[20px] blur-[0.5px]">
-                <h2 className="font-girlNextDoor font-thin text-[25px] text-shadow-neon-purple text-stroke-purple text-pink-100">NIGHTS</h2>
-                <h2 className="font-girlNextDoor font-thin text-[25px] absolute text-pink-100">NIGHTS</h2>
-              </div>
+        <button
+          onClick={goToMenu}
+          className="btn_homeLogo-customMatch group z-30 flex flex-row items-center gap-12 mb-[10px] cursor-pointer w-full"
+        >
+          <div className="flex flex-col cursor-pointer pl-10">
+            <div className="ctrl_logo_h1 flex blur-[0.5px]">
+              <h1 className="font-tiltNeon text-[40px] text-shadow-neon-pink text-stroke-pink text-pink-100">
+                TRIVIA
+              </h1>
+              <h1 className="font-tiltNeon text-[40px] absolute text-pink-100">
+                TRIVIA
+              </h1>
             </div>
-          </button>
+            <div className="ctrl_logo_h2 flex w-full justify-end mt-[-10px] ml-[20px] blur-[0.5px]">
+              <h2 className="font-girlNextDoor font-thin text-[25px] text-shadow-neon-purple text-stroke-purple text-pink-100">
+                NIGHTS
+              </h2>
+              <h2 className="font-girlNextDoor font-thin text-[25px] absolute text-pink-100">
+                NIGHTS
+              </h2>
+            </div>
+          </div>
+          <span className="info_backToMenu hidden group-hover:flex font-tiltNeon text-shadow-scintillant text-lg text-white">
+            Retour au Menu Principal
+          </span>
+        </button>
         </div>
       </main>
 
